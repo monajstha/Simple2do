@@ -44,11 +44,11 @@ user.addProject(project);
 user.addProject(project2);
 user.addProject(project3);
 
-console.log({ user });
-console.log({ project });
-console.log(project.getAllTasks());
+// console.log({ user });
+// console.log({ project });
+// console.log(project.getAllTasks());
 
-function taskController() {
+function taskRenderController() {
   let activeProject = user.getAllProjects()[0];
 
   const switchActiveProject = (project) => {
@@ -61,7 +61,7 @@ function taskController() {
 
   const renderActiveTasks = () => {
     let allTasks = activeProject.tasks.map((item) => {
-      console.log("inside", item);
+      // console.log("inside", item);
       return `<div>${item.title}</div>`;
     });
     infoViewDiv.innerHTML = allTasks;
@@ -74,8 +74,8 @@ function taskController() {
   };
 }
 
-function projectsController() {
-  const task = taskController();
+function projectsRenderController() {
+  const task = taskRenderController();
 
   const handleProjectClick = (item) => {
     infoViewDiv.innerHTML = "";
@@ -84,6 +84,7 @@ function projectsController() {
   };
 
   const renderProjects = () => {
+    projectsDiv.textContent = "";
     let allProjects = user.getAllProjects().map((item, index) => {
       const projectName = document.createElement("p");
       projectName.addEventListener("click", () => handleProjectClick(item));
@@ -101,4 +102,59 @@ function projectsController() {
   };
 }
 
-projectsController();
+function projectActionController() {
+  const projectRender = projectsRenderController();
+
+  const dialog = document.querySelector("dialog");
+  const addProjectBtn = document.querySelector("#addProjectBtn"); // Uncommented this line
+  const closeBtn = document.querySelector("#closeBtn");
+  const addNewProjectBtn = document.querySelector("#addNewProjectBtn");
+
+  addProjectBtn.addEventListener("click", () => {
+    displayModal();
+  });
+
+  closeBtn.addEventListener("click", () => {
+    closeModal();
+  });
+
+  addNewProjectBtn.addEventListener("click", () => {
+    addNewProject();
+  });
+
+  const displayModal = () => {
+    console.log("opened");
+    dialog.showModal(); // Open the dialog when the button is clicked
+  };
+
+  const closeModal = () => {
+    console.log("closed");
+    dialog.close(); // Close the dialog when the close button is clicked
+  };
+
+  const addNewProject = () => {
+    let project = {};
+    const form = document.getElementById("addNewProjectForm");
+    let data = new FormData(form);
+    for (let [key, value] of data) {
+      project = {
+        ...project,
+        [key]: value,
+      };
+    }
+    user.addProject(project);
+    closeModal();
+    form.reset();
+    // render project after it is added
+    projectRender.renderProjects();
+  };
+}
+
+function projectController() {
+  const projectAction = projectActionController();
+  // const projectRender = projectsRenderController();
+}
+
+projectController();
+
+// projectsRenderController();

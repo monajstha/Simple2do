@@ -8,12 +8,48 @@
   display: grid;
   grid-template-columns: 1fr 4fr;
   height: 100vh;
+  /* padding: 16px; */
 }
 
 #controlView {
   background-color: green;
+  padding: 8px;
 }
 
 #infoView {
   background-color: yellow;
+  padding: 8px;
+}
+
+#projectHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+dialog {
+  width: 80%;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 16px;
+  /* width: 80%; */
+  justify-content: center;
+}
+
+dialog::backdrop {
+  background-image: linear-gradient(45deg, #000428, #004e92);
+  opacity: 0.75;
+}
+
+#closeBtn {
+  width: fit-content;
+  align-self: flex-end;
+}
+
+#inputsRowContainer {
+  display: flex;
+  justify-content: space-between;
 }
