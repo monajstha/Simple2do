@@ -8,45 +8,7 @@ const contentDiv = document.querySelector("#content");
 const projectsDiv = document.querySelector("#projects");
 const infoViewDiv = document.querySelector("#infoView");
 
-const task = new Task(
-  format(new Date(), "MM/dd/yyyy hh:mm:ss"),
-  "Task 1",
-  "I will complete!",
-  "medium",
-  "2024-08-12"
-);
-const project = new Project(
-  format(new Date(), "MM/dd/yyyy hh:mm:ss"),
-  "Project1",
-  "I will complete!",
-  "high",
-  "2024-09-03"
-);
-const project2 = new Project(
-  format(new Date(), "MM/dd/yyyy hh:mm:ss"),
-  "Project2",
-  "I will complete!",
-  "high",
-  "2024-09-03"
-);
-const project3 = new Project(1, "Project3");
-
-// console.log({ task });
-project.addTask(task);
-project.addTask({
-  title: "Task 2",
-});
-
-task.setTitle("Task 22");
-// project.deleteATask(task.title);
 const user = new User("Manoj Shrestha");
-user.addProject(project);
-user.addProject(project2);
-user.addProject(project3);
-
-// console.log({ user });
-// console.log({ project });
-// console.log(project.getAllTasks());
 
 function taskRenderController() {
   let activeProject = user.getAllProjects()[0];
@@ -60,10 +22,15 @@ function taskRenderController() {
   };
 
   const renderActiveTasks = () => {
-    let allTasks = activeProject.tasks.map((item) => {
-      // console.log("inside", item);
-      return `<div>${item.title}</div>`;
-    });
+    let allTasks = "";
+    if (activeProject?.tasks?.length) {
+      allTasks = activeProject?.tasks?.map((item) => {
+        // console.log("inside", item);
+        return `<div>${item.title}</div>`;
+      });
+    } else {
+      allTasks = "Click on Add task to add tasks!";
+    }
     infoViewDiv.innerHTML = allTasks;
     contentDiv.append(infoViewDiv);
   };
@@ -99,6 +66,7 @@ function projectsRenderController() {
   renderProjects();
   return {
     renderProjects,
+    handleProjectClick,
   };
 }
 
@@ -145,11 +113,17 @@ function taskActionController() {
     }
     console.log({ task });
     user.addTaskToProject(task.project, task);
+    console.log("User after project add", user);
+    let selectedProject = user
+      .getAllProjects()
+      .find((item) => item?.title === task.project);
+    taskRender.switchActiveProject(selectedProject);
     closeModal();
     form.reset();
     taskRender.renderActiveTasks();
   };
 
+  // Populate select in add task form
   const getAllProjectsForSelect = () => {
     const optGroup = document.querySelector("#projectOptionGroup");
     const options = user.getAllProjects().map((project) => {
@@ -162,6 +136,8 @@ function taskActionController() {
   // Initial project select load for add task form
   getAllProjectsForSelect();
   return {
+    getActiveProject: taskRender.getActiveProject,
+    switchActiveProject: taskRender.switchActiveProject,
     getAllProjectsForSelect,
   };
 }
@@ -214,6 +190,7 @@ function projectActionController() {
       i++;
     }
     user.addProject(project);
+    taskAction.switchActiveProject(project);
     closeModal();
     form.reset();
     // render project after it is added
@@ -229,5 +206,7 @@ function projectController() {
 }
 
 projectController();
+
+console.log({ user });
 
 // projectsRenderController();
