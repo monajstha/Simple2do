@@ -16,7 +16,6 @@ class User {
       project.priority,
       project.due_date
     );
-    console.log({ projectObj });
     this.projects.push(projectObj);
   }
 
@@ -24,7 +23,7 @@ class User {
     this.projects.map((item) => {
       if (item?.title === project) {
         const taskObj = new Task(
-          format(new Date(), "MM/dd/yyyy hh:mm:ss"),
+          task.id,
           task.title,
           task.description,
           task.priority,

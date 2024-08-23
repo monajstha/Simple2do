@@ -11,21 +11,24 @@ const infoViewDiv = document.querySelector("#infoView");
 const user = new User("Manoj Shrestha");
 
 function taskRenderController() {
-  let activeProject = user.getAllProjects()[0];
+  const projects = user.getAllProjects();
+  let activeProjectId = projects[0]?.id;
 
-  const switchActiveProject = (project) => {
-    activeProject = project;
+  const switchActiveProjectId = (projectId) => {
+    activeProjectId = projectId;
   };
 
-  const getActiveProject = () => {
-    return activeProject;
+  const getActiveProjectId = () => {
+    return activeProjectId;
   };
 
   const renderActiveTasks = () => {
     let allTasks = "";
+    const activeProject = projects.find((item) => item.id === activeProjectId);
+    console.log({ projects }, { activeProjectId }, { activeProject });
     if (activeProject?.tasks?.length) {
       allTasks = activeProject?.tasks?.map((item) => {
-        // console.log("inside", item);
+        console.log("inside", item);
         return `<div>${item.title}</div>`;
       });
     } else {
@@ -35,8 +38,8 @@ function taskRenderController() {
     contentDiv.append(infoViewDiv);
   };
   return {
-    switchActiveProject,
-    getActiveProject,
+    switchActiveProjectId,
+    // getActiveProjectId,
     renderActiveTasks,
   };
 }
@@ -44,9 +47,9 @@ function taskRenderController() {
 function projectsRenderController() {
   const task = taskRenderController();
 
-  const handleProjectClick = (item) => {
+  const handleProjectClick = (itemId) => {
     infoViewDiv.innerHTML = "";
-    task.switchActiveProject(item);
+    task.switchActiveProjectId(itemId);
     task.renderActiveTasks();
   };
 
@@ -54,7 +57,7 @@ function projectsRenderController() {
     projectsDiv.textContent = "";
     let allProjects = user.getAllProjects().map((item, index) => {
       const projectName = document.createElement("p");
-      projectName.addEventListener("click", () => handleProjectClick(item));
+      projectName.addEventListener("click", () => handleProjectClick(item?.id));
       // render tasks on initial load
       task.renderActiveTasks();
       projectName.textContent = `#${item.title}`;
@@ -74,7 +77,7 @@ function taskActionController() {
   const taskRender = taskRenderController();
 
   const dialog = document.querySelector("#newTaskDialog");
-  const addTaskBtn = document.querySelector("#addTaskBtn"); // Uncommented this line
+  const addTaskBtn = document.querySelector("#addTaskBtn");
   const closeBtn = document.querySelector("#taskDialogCloseBtn");
   const addNewTaskBtn = document.querySelector("#addNewTaskBtn");
 
@@ -101,7 +104,9 @@ function taskActionController() {
   };
 
   const addNewTask = () => {
-    let task = {};
+    let task = {
+      id: format(new Date(), "MM/dd/yyyy hh:mm:ss"),
+    };
     const form = document.getElementById("addNewTaskForm");
     let data = new FormData(form);
     for (let [key, value] of data) {
@@ -117,7 +122,7 @@ function taskActionController() {
     let selectedProject = user
       .getAllProjects()
       .find((item) => item?.title === task.project);
-    taskRender.switchActiveProject(selectedProject);
+    taskRender.switchActiveProjectId(selectedProject?.id);
     closeModal();
     form.reset();
     taskRender.renderActiveTasks();
@@ -136,8 +141,8 @@ function taskActionController() {
   // Initial project select load for add task form
   getAllProjectsForSelect();
   return {
-    getActiveProject: taskRender.getActiveProject,
-    switchActiveProject: taskRender.switchActiveProject,
+    // getActiveProjectId: taskRender.getActiveProjectId,
+    switchActiveProjectId: taskRender.switchActiveProjectId,
     getAllProjectsForSelect,
   };
 }
@@ -190,7 +195,7 @@ function projectActionController() {
       i++;
     }
     user.addProject(project);
-    taskAction.switchActiveProject(project);
+    taskAction.switchActiveProjectId(project);
     closeModal();
     form.reset();
     // render project after it is added
