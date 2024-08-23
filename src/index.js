@@ -17,19 +17,19 @@ const task = new Task(
 );
 const project = new Project(
   format(new Date(), "MM/dd/yyyy hh:mm:ss"),
-  "Project 1",
+  "Project1",
   "I will complete!",
   "high",
   "2024-09-03"
 );
 const project2 = new Project(
   format(new Date(), "MM/dd/yyyy hh:mm:ss"),
-  "Project 2",
+  "Project2",
   "I will complete!",
   "high",
   "2024-09-03"
 );
-const project3 = new Project(1, "Project 3");
+const project3 = new Project(1, "Project3");
 
 // console.log({ task });
 project.addTask(task);
@@ -102,10 +102,74 @@ function projectsRenderController() {
   };
 }
 
+function taskActionController() {
+  const taskRender = taskRenderController();
+
+  const dialog = document.querySelector("#newTaskDialog");
+  const addTaskBtn = document.querySelector("#addTaskBtn"); // Uncommented this line
+  const closeBtn = document.querySelector("#taskDialogCloseBtn");
+  const addNewTaskBtn = document.querySelector("#addNewTaskBtn");
+
+  addTaskBtn.addEventListener("click", () => {
+    displayModal();
+  });
+
+  closeBtn.addEventListener("click", () => {
+    closeModal();
+  });
+
+  addNewTaskBtn.addEventListener("click", () => {
+    addNewTask();
+  });
+
+  const displayModal = () => {
+    console.log("opened");
+    dialog.showModal(); // Open the dialog when the button is clicked
+  };
+
+  const closeModal = () => {
+    console.log("closed");
+    dialog.close(); // Close the dialog when the close button is clicked
+  };
+
+  const addNewTask = () => {
+    let task = {};
+    const form = document.getElementById("addNewTaskForm");
+    let data = new FormData(form);
+    for (let [key, value] of data) {
+      console.log({ value });
+      task = {
+        ...task,
+        [key]: value,
+      };
+    }
+    console.log({ task });
+    user.addTaskToProject(task.project, task);
+    closeModal();
+    form.reset();
+    taskRender.renderActiveTasks();
+  };
+
+  const getAllProjectsForSelect = () => {
+    const optGroup = document.querySelector("#projectOptionGroup");
+    const options = user.getAllProjects().map((project) => {
+      console.log({ project });
+      return `<option value=${project.title}>${project.title}</option>`;
+    });
+    optGroup.innerHTML = options;
+    console.log(optGroup);
+  };
+  // Initial project select load for add task form
+  getAllProjectsForSelect();
+  return {
+    getAllProjectsForSelect,
+  };
+}
+
 function projectActionController() {
   const projectRender = projectsRenderController();
-
-  const dialog = document.querySelector("dialog");
+  const taskAction = taskActionController();
+  const dialog = document.querySelector("#newProjectDialog");
   const addProjectBtn = document.querySelector("#addProjectBtn"); // Uncommented this line
   const closeBtn = document.querySelector("#closeBtn");
   const addNewProjectBtn = document.querySelector("#addNewProjectBtn");
@@ -136,21 +200,30 @@ function projectActionController() {
     let project = {};
     const form = document.getElementById("addNewProjectForm");
     let data = new FormData(form);
+    let requiredKeys = ["title", "description"];
+    let i = 0;
     for (let [key, value] of data) {
+      if (key === requiredKeys[i] && value === "") {
+        alert("Please fill the title and description!");
+        return;
+      }
       project = {
         ...project,
         [key]: value,
       };
+      i++;
     }
     user.addProject(project);
     closeModal();
     form.reset();
     // render project after it is added
     projectRender.renderProjects();
+    taskAction.getAllProjectsForSelect();
   };
 }
 
 function projectController() {
+  // const taskAction = taskActionController();
   const projectAction = projectActionController();
   // const projectRender = projectsRenderController();
 }

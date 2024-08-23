@@ -27,7 +27,7 @@
 }
 
 dialog {
-  width: 80%;
+  width: 40%;
 }
 
 form {
@@ -44,7 +44,8 @@ dialog::backdrop {
   opacity: 0.75;
 }
 
-#closeBtn {
+#closeBtn,
+#taskDialogCloseBtn {
   width: fit-content;
   align-self: flex-end;
 }
