@@ -10,7 +10,7 @@ class User {
 
   addProject(project) {
     const projectObj = new Project(
-      format(new Date(), "MM/dd/yyyy hh:mm:ss"),
+      project.id,
       project.title,
       project.description,
       project.priority,
@@ -19,18 +19,22 @@ class User {
     this.projects.push(projectObj);
   }
 
-  addTaskToProject(project, task) {
+  addTaskToProject(projectId, task) {
+    console.log({ projectId }, { task });
     this.projects.map((item) => {
-      if (item?.title === project) {
+      console.log("Project", item);
+      if (item?.id === +projectId) {
         const taskObj = new Task(
-          task.id,
+          item?.tasks?.length + 1,
+          +task.projectId,
           task.title,
           task.description,
           task.priority,
           task.due_date
         );
         item.tasks.push(taskObj);
-        return;
+        console.log({ item });
+        // return;
       }
     });
   }

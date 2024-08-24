@@ -26,14 +26,23 @@ function taskRenderController() {
     let allTasks = "";
     const activeProject = projects.find((item) => item.id === activeProjectId);
     console.log({ projects }, { activeProjectId }, { activeProject });
-    if (activeProject?.tasks?.length) {
-      allTasks = activeProject?.tasks?.map((item) => {
-        console.log("inside", item);
-        return `<div>${item.title}</div>`;
-      });
-    } else {
-      allTasks = "Click on Add task to add tasks!";
+    allTasks = `<div><h2>${activeProject?.title}
+    </h2>
+    <p>${activeProject?.description}</p>
+    ${
+      activeProject?.tasks?.length
+        ? activeProject?.tasks?.map((task) => `<div>${task.title}</div>`)
+        : `Click on Add task to add tasks!`
     }
+    </div>`;
+    // if (activeProject?.tasks?.length) {
+    //   allTasks = activeProject?.tasks?.map((item) => {
+    //     console.log("inside", item);
+    //     return `<div>${item.title}</div>`;
+    //   });
+    // } else {
+    //   allTasks = "Click on Add task to add tasks!";
+    // }
     infoViewDiv.innerHTML = allTasks;
     contentDiv.append(infoViewDiv);
   };
@@ -47,9 +56,9 @@ function taskRenderController() {
 function projectsRenderController() {
   const task = taskRenderController();
 
-  const handleProjectClick = (itemId) => {
+  const handleProjectClick = (projectId) => {
     infoViewDiv.innerHTML = "";
-    task.switchActiveProjectId(itemId);
+    task.switchActiveProjectId(projectId);
     task.renderActiveTasks();
   };
 
@@ -104,9 +113,7 @@ function taskActionController() {
   };
 
   const addNewTask = () => {
-    let task = {
-      id: format(new Date(), "MM/dd/yyyy hh:mm:ss"),
-    };
+    let task = {};
     const form = document.getElementById("addNewTaskForm");
     let data = new FormData(form);
     for (let [key, value] of data) {
@@ -117,15 +124,16 @@ function taskActionController() {
       };
     }
     console.log({ task });
-    user.addTaskToProject(task.project, task);
+    user.addTaskToProject(task.projectId, task);
     console.log("User after project add", user);
     let selectedProject = user
       .getAllProjects()
-      .find((item) => item?.title === task.project);
+      .find((item) => item?.id === +task.projectId);
+    console.log({ selectedProject });
     taskRender.switchActiveProjectId(selectedProject?.id);
+    taskRender.renderActiveTasks();
     closeModal();
     form.reset();
-    taskRender.renderActiveTasks();
   };
 
   // Populate select in add task form
@@ -133,7 +141,7 @@ function taskActionController() {
     const optGroup = document.querySelector("#projectOptionGroup");
     const options = user.getAllProjects().map((project) => {
       console.log({ project });
-      return `<option value=${project.title}>${project.title}</option>`;
+      return `<option value=${project.id}>${project.title}</option>`;
     });
     optGroup.innerHTML = options;
     console.log(optGroup);
@@ -178,7 +186,9 @@ function projectActionController() {
   };
 
   const addNewProject = () => {
-    let project = {};
+    let project = {
+      id: user.getAllProjects().length + 1,
+    };
     const form = document.getElementById("addNewProjectForm");
     let data = new FormData(form);
     let requiredKeys = ["title", "description"];
@@ -195,7 +205,7 @@ function projectActionController() {
       i++;
     }
     user.addProject(project);
-    taskAction.switchActiveProjectId(project);
+    projectRender.handleProjectClick(project?.id);
     closeModal();
     form.reset();
     // render project after it is added
