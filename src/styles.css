@@ -54,3 +54,37 @@ dialog::backdrop {
   display: flex;
   justify-content: space-between;
 }
+
+#taskCardWrapper {
+  /* background-color: aqua; */
+  /* padding: 8px 8px; */
+}
+
+#tasksHeader {
+  margin-top: 8px;
+}
+
+#taskCard {
+  display: flex;
+  align-items: start;
+  border: 1.5px solid red;
+  border-radius: 4px;
+  padding: 8px 8px;
+  /* background-color: #004e92; */
+  margin: 12px;
+  /* background-color: "blue"; */
+}
+
+#taskContentDiv {
+  margin-left: 8px;
+}
+
+#taskTitle {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+#taskCheckbox {
+  width: 18px;
+  height: 18px;
+}

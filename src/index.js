@@ -9,8 +9,32 @@ const projectsDiv = document.querySelector("#projects");
 const infoViewDiv = document.querySelector("#infoView");
 
 const user = new User("Manoj Shrestha");
+const project = new Project(
+  1,
+  "Project 1",
+  "This is a project",
+  "High",
+  "2024-08-25",
+  false
+);
+const task = new Task(
+  1,
+  1,
+  "Task 1",
+  "This is a task 1 of first project",
+  "High",
+  "2024-08-24",
+  false
+);
+user.addProject(project);
+user.addTaskToProject(project.id, task);
 
 function taskRenderController() {
+  const projectViewDiv = document.createElement("div");
+  const taskCardWrapper = document.createElement("div");
+  taskCardWrapper.id = "taskCardWrapper";
+  projectViewDiv.id = "projectViewDiv";
+
   const projects = user.getAllProjects();
   let activeProjectId = projects[0]?.id;
 
@@ -22,28 +46,56 @@ function taskRenderController() {
     return activeProjectId;
   };
 
-  const renderActiveTasks = () => {
-    let allTasks = "";
+  const taskCardRender = (tasks) => {
+    taskCardWrapper.innerHTML = "";
+    if (tasks.length) {
+      // const taskCard = document.createElement("div");
+      // taskCard.id = "taskCard";
+      let taskCardContent = tasks?.map((task) => {
+        const taskCard = document.createElement("div");
+        taskCard.id = "taskCard";
+        taskCard.innerHTML = `
+            <input id="taskCheckbox" type="checkbox" value=${task.completed} >
+            <div id="taskContentDiv">
+              <div id="taskTitle">${task.title}</div>
+              <div>Due Date: ${task.due_date}</div>
+            </div>
+          `;
+        taskCard.style.borderColor =
+          task?.priority.toLowerCase() === "high"
+            ? "#ff0000"
+            : task.priority === "medium"
+            ? "#004e92"
+            : "#1a9b11";
+        taskCardWrapper.append(taskCard);
+      });
+      // taskCardWrapper.append(taskCardContent);
+    } else {
+      taskCardWrapper.innerHTML = "Click on Add task to add tasks!";
+    }
+  };
+
+  const projectViewRender = () => {
+    infoViewDiv.textContent = "";
     const activeProject = projects.find((item) => item.id === activeProjectId);
-    console.log({ projects }, { activeProjectId }, { activeProject });
-    allTasks = `<div><h2>${activeProject?.title}
+    taskCardRender(activeProject?.tasks);
+    projectViewDiv.innerHTML = `<div>
+    <div>
+    <h2>${activeProject?.title}
     </h2>
     <p>${activeProject?.description}</p>
-    ${
-      activeProject?.tasks?.length
-        ? activeProject?.tasks?.map((task) => `<div>${task.title}</div>`)
-        : `Click on Add task to add tasks!`
-    }
+    </div>
+    <div>
+    <h3 id="tasksHeader">Tasks</h3>
+    </div>
+    
     </div>`;
-    // if (activeProject?.tasks?.length) {
-    //   allTasks = activeProject?.tasks?.map((item) => {
-    //     console.log("inside", item);
-    //     return `<div>${item.title}</div>`;
-    //   });
-    // } else {
-    //   allTasks = "Click on Add task to add tasks!";
-    // }
-    infoViewDiv.innerHTML = allTasks;
+    projectViewDiv.append(taskCardWrapper);
+  };
+
+  const renderActiveTasks = () => {
+    projectViewRender();
+    infoViewDiv.append(projectViewDiv);
     contentDiv.append(infoViewDiv);
   };
   return {
