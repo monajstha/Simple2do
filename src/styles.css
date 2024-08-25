@@ -12,8 +12,12 @@
 }
 
 #controlView {
-  background-color: green;
-  padding: 8px;
+  background-color: rgb(101, 98, 98);
+  /* padding: 8px; */
+}
+
+#controlWrapper {
+  padding: 12px;
 }
 
 #infoView {
@@ -73,6 +77,7 @@ dialog::backdrop {
   /* background-color: #004e92; */
   margin: 12px;
   /* background-color: "blue"; */
+  justify-content: space-between;
 }
 
 #taskContentDiv {
@@ -84,7 +89,26 @@ dialog::backdrop {
   font-size: 1rem;
 }
 
+#taskInfoWrapper {
+  display: flex;
+}
+
 #taskCheckbox {
   width: 18px;
   height: 18px;
+}
+
+#deleteBtn {
+  background-color: "red";
+  color: "white";
+  font-weight: 500;
+  padding: 2px;
+}
+
+#projectsListingDiv {
+  margin-top: 8px;
+}
+
+#projectListingCard {
+  padding: 8px;
 }

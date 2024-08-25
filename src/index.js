@@ -5,7 +5,8 @@ import { format } from "date-fns";
 import "./styles.css";
 
 const contentDiv = document.querySelector("#content");
-const projectsDiv = document.querySelector("#projects");
+const projectsListingDiv = document.querySelector("#projects");
+projectsListingDiv.id = "projectsListingDiv";
 const infoViewDiv = document.querySelector("#infoView");
 
 const user = new User("Manoj Shrestha");
@@ -55,11 +56,14 @@ function taskRenderController() {
         const taskCard = document.createElement("div");
         taskCard.id = "taskCard";
         taskCard.innerHTML = `
+            <div id="taskInfoWrapper">
             <input id="taskCheckbox" type="checkbox" value=${task.completed} >
             <div id="taskContentDiv">
               <div id="taskTitle">${task.title}</div>
               <div>Due Date: ${task.due_date}</div>
             </div>
+            </div>
+            <button id="deleteBtn">Delete</button>
           `;
         taskCard.style.borderColor =
           task?.priority.toLowerCase() === "high"
@@ -80,15 +84,13 @@ function taskRenderController() {
     const activeProject = projects.find((item) => item.id === activeProjectId);
     taskCardRender(activeProject?.tasks);
     projectViewDiv.innerHTML = `<div>
-    <div>
-    <h2>${activeProject?.title}
-    </h2>
-    <p>${activeProject?.description}</p>
-    </div>
-    <div>
-    <h3 id="tasksHeader">Tasks</h3>
-    </div>
-    
+      <div>
+        <h2>${activeProject?.title}</h2>
+        <p>${activeProject?.description}</p>
+      </div>
+      <div>
+        <h3 id="tasksHeader">Tasks</h3>
+      </div>
     </div>`;
     projectViewDiv.append(taskCardWrapper);
   };
@@ -98,9 +100,10 @@ function taskRenderController() {
     infoViewDiv.append(projectViewDiv);
     contentDiv.append(infoViewDiv);
   };
+
   return {
     switchActiveProjectId,
-    // getActiveProjectId,
+    getActiveProjectId,
     renderActiveTasks,
   };
 }
@@ -115,14 +118,29 @@ function projectsRenderController() {
   };
 
   const renderProjects = () => {
-    projectsDiv.textContent = "";
+    projectsListingDiv.textContent = "";
     let allProjects = user.getAllProjects().map((item, index) => {
-      const projectName = document.createElement("p");
-      projectName.addEventListener("click", () => handleProjectClick(item?.id));
-      // render tasks on initial load
+      const projectListingCard = document.createElement("div");
+      projectListingCard.id = `projectListingCard`;
+      projectListingCard.addEventListener("click", () => {
+        handleProjectClick(item?.id);
+        // Reset the background color
+        document.querySelectorAll("#projectListingCard").forEach((card) => {
+          card.style.backgroundColor = "rgb(101, 98, 98)";
+        });
+        projectListingCard.style.backgroundColor = "rgba(51, 170, 51, 0.7)";
+      });
+      // Render tasks on initial load
       task.renderActiveTasks();
-      projectName.textContent = `#${item.title}`;
-      projectsDiv.append(projectName);
+      projectListingCard.textContent = `#${item.title}`;
+
+      // Set the initial background color
+      projectListingCard.style.backgroundColor =
+        item?.id === task.getActiveProjectId()
+          ? "rgba(51, 170, 51, 0.7)"
+          : "rgb(101, 98, 98)";
+
+      projectsListingDiv.append(projectListingCard);
     });
   };
 
