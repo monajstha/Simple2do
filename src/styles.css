@@ -142,7 +142,35 @@ dialog::backdrop {
   padding: 12px;
 }
 
-#activeTaskTitle:hover {
+#activeTaskTitle,
+#activeTaskDescription {
+  width: 100%;
+}
+
+#title,
+#description {
+  width: 97%;
+  height: 2rem;
+  font-size: larger;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+#buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+#saveBtn,
+#cancelBtn {
+  padding: 4px 8px;
+  margin-right: 12px;
+  align-self: flex-end;
+}
+
+#activeTaskTitle:hover,
+#activeTaskDescription:hover {
   border: 1px solid lightgray;
   cursor: text;
 }

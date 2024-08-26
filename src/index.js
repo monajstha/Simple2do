@@ -67,7 +67,6 @@ function taskRenderController() {
 
   const projects = user.getAllProjects();
   let activeProjectId = projects[0]?.id;
-  let activeTaskId;
 
   const switchActiveProjectId = (projectId) => {
     activeProjectId = projectId;
@@ -184,8 +183,13 @@ function taskRenderController() {
     <button id="backBtn">Back</button>
     <div id="activeTaskDetails">
       <div id="activeTaskInfo">
-        <h1 id="activeTaskTitle">${activeTask?.title}</h1>
-        <p>${activeTask?.description}</p>
+          <div id="activeTaskHeaderDiv">
+            <h1 id="activeTaskTitle">${activeTask?.title}</h1>
+          </div>
+
+          <div id="activeTaskDescriptionDiv">
+            <p id="activeTaskDescription">${activeTask?.description}</p>
+          </div>
       </div>
     
       <div id="activeProjectInfo">
@@ -210,7 +214,6 @@ function taskRenderController() {
       </div>
       <div>
     </div>
-   
   `;
 
     const backBtn = taskDetailsViewDiv.querySelector("#backBtn");
@@ -218,7 +221,80 @@ function taskRenderController() {
       // Previous view i.e. the project view
       renderActiveTasks();
     });
+
+    const activeTaskTitle =
+      taskDetailsViewDiv.querySelector("#activeTaskTitle");
+    activeTaskTitle.addEventListener("click", () => {
+      editTaskDetailDiv(
+        activeTask.id,
+        "title",
+        "#activeTaskTitle",
+        "#activeTaskHeaderDiv"
+      );
+    });
+
+    const activeTaskDescription = taskDetailsViewDiv.querySelector(
+      "#activeTaskDescription"
+    );
+    activeTaskDescription.addEventListener("click", () => {
+      editTaskDetailDiv(
+        activeTask.id,
+        "description",
+        "#activeTaskDescription",
+        "#activeTaskDescriptionDiv"
+      );
+    });
+
     infoViewDiv.append(taskDetailsViewDiv);
+  };
+
+  const editTaskDetailDiv = (
+    taskId,
+    key,
+    selectedDetail,
+    selectedDetailDiv
+  ) => {
+    const activeProject = projects.find((item) => item.id === +activeProjectId);
+    const activeTask = activeProject.tasks.find((item) => item.id === +taskId);
+    const activeTaskTitle = taskDetailsViewDiv.querySelector(selectedDetail);
+
+    activeTaskTitle.textContent = "";
+    const activeTaskHeaderDiv =
+      taskDetailsViewDiv.querySelector(selectedDetailDiv);
+
+    const editTaskInfoDiv = document.createElement("div");
+    const input = document.createElement("input");
+    input.id = key;
+    input.type = "text";
+    input.value = activeTask[key];
+    input.onchange = (text) => {
+      console.log("Text", text);
+    };
+    input.autofocus;
+
+    const buttonWrapper = document.createElement("div");
+    buttonWrapper.id = "buttonWrapper";
+    const saveBtn = document.createElement("button");
+    saveBtn.id = "saveBtn";
+    saveBtn.textContent = "Save";
+    const cancelBtn = document.createElement("button");
+    cancelBtn.id = "cancelBtn";
+    cancelBtn.textContent = "Cancel";
+    buttonWrapper.append(cancelBtn, saveBtn);
+
+    saveBtn.onclick = () => {
+      activeTaskHeaderDiv.textContent = "";
+      activeProject.updateTaskDetails(activeTask.id, input.id, input.value);
+      activeTaskTitle.textContent = input.value;
+      activeTaskHeaderDiv.append(activeTaskTitle);
+    };
+
+    cancelBtn.onclick = () => {
+      renderActiveTaskDetails(activeTask.id);
+    };
+
+    editTaskInfoDiv.append(input, buttonWrapper);
+    activeTaskHeaderDiv.append(editTaskInfoDiv);
   };
 
   return {
@@ -424,13 +500,9 @@ function projectActionController() {
 }
 
 function projectController() {
-  // const taskAction = taskActionController();
   const projectAction = projectActionController();
-  // const projectRender = projectsRenderController();
 }
 
 projectController();
 
 console.log({ user });
-
-// projectsRenderController();

@@ -29,6 +29,15 @@ class Project {
     this.completed = !this.completed;
   }
 
+  updateTaskDetails(taskId, key, updatedValue) {
+    this.tasks?.map((item) => {
+      if (item?.id === taskId) {
+        item[key] = updatedValue;
+      }
+    });
+    console.log(this.tasks);
+  }
+
   updateTaskStatus(id) {
     this.tasks?.map((item) => {
       if (item?.id === id) {
