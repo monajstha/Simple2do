@@ -25,8 +25,17 @@ class Project {
     this.priority = priority;
   }
 
-  setTaskStatus(completed) {
-    this.completed = !completed;
+  setProjectStatus() {
+    this.completed = !this.completed;
+  }
+
+  setTaskStatus(id) {
+    this.tasks?.map((item) => {
+      if (item?.id === id) {
+        item.completed = !item.completed;
+      }
+    });
+    console.log(this.tasks);
   }
 
   setDescription(description) {
@@ -42,6 +51,7 @@ class Project {
   }
 
   deleteATask(taskId) {
+    console.log({ taskId });
     this.tasks = this.tasks.filter((item) => item?.id !== taskId);
   }
 }

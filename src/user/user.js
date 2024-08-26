@@ -9,34 +9,19 @@ class User {
   }
 
   addProject(project) {
-    const projectObj = new Project(
-      project.id,
-      project.title,
-      project.description,
-      project.priority,
-      project.due_date
-    );
-    this.projects.push(projectObj);
+    if (!project instanceof Project) return;
+
+    console.log("Add project instance?", project instanceof Project);
+    this.projects.push(project);
   }
 
-  addTaskToProject(projectId, task) {
-    console.log({ projectId }, { task });
-    this.projects.map((item) => {
-      console.log("Project", item);
-      if (item?.id === +projectId) {
-        const taskObj = new Task(
-          item?.tasks?.length + 1,
-          +task.projectId,
-          task.title,
-          task.description,
-          task.priority,
-          task.due_date
-        );
-        item.tasks.push(taskObj);
-        console.log({ item });
-        // return;
-      }
-    });
+  addTaskToProject(task) {
+    if (!task instanceof Task) return;
+    const selectedProject = this.projects.find(
+      (item) => item.id === +task.projectId
+    );
+    console.log("Task instance? ", task instanceof Task);
+    selectedProject.addTask(task);
   }
 
   getAllProjects() {

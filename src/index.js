@@ -27,8 +27,34 @@ const task = new Task(
   "2024-08-24",
   false
 );
-user.addProject(project);
-user.addTaskToProject(project.id, task);
+const task2 = new Task(
+  2,
+  1,
+  "Task 2",
+  "This is a task 1 of first project",
+  "High",
+  "2024-08-24",
+  false
+);
+
+const task3 = new Task(
+  3,
+  1,
+  "Task 3",
+  "This is a task 1 of first project",
+  "High",
+  "2024-08-24",
+  false
+);
+
+// user.addProject(project);
+// user.addTaskToProject(project.id, task);
+// user.addTaskToProject(project.id, task2);
+// console.log(project.getAllTasks());
+// // user.addTaskToProject(project.id, task2);
+// // user.addingTask(project, task3);
+// // console.log(project.getAllTasks());
+// console.log(user);
 
 function taskRenderController() {
   const projectViewDiv = document.createElement("div");
@@ -122,14 +148,6 @@ function projectsRenderController() {
     let allProjects = user.getAllProjects().map((item, index) => {
       const projectListingCard = document.createElement("div");
       projectListingCard.id = `projectListingCard`;
-      projectListingCard.addEventListener("click", () => {
-        handleProjectClick(item?.id);
-        // Reset the background color
-        document.querySelectorAll("#projectListingCard").forEach((card) => {
-          card.style.backgroundColor = "rgb(101, 98, 98)";
-        });
-        projectListingCard.style.backgroundColor = "rgba(51, 170, 51, 0.7)";
-      });
       // Render tasks on initial load
       task.renderActiveTasks();
       projectListingCard.textContent = `#${item.title}`;
@@ -139,6 +157,15 @@ function projectsRenderController() {
         item?.id === task.getActiveProjectId()
           ? "rgba(51, 170, 51, 0.7)"
           : "rgb(101, 98, 98)";
+
+      projectListingCard.addEventListener("click", () => {
+        handleProjectClick(item?.id);
+        // Reset the background color for all cards
+        document.querySelectorAll("#projectListingCard").forEach((card) => {
+          card.style.backgroundColor = "rgb(101, 98, 98)";
+        });
+        projectListingCard.style.backgroundColor = "rgba(51, 170, 51, 0.7)";
+      });
 
       projectsListingDiv.append(projectListingCard);
     });
@@ -183,23 +210,30 @@ function taskActionController() {
   };
 
   const addNewTask = () => {
-    let task = {};
+    let taskFormValue = {};
     const form = document.getElementById("addNewTaskForm");
     let data = new FormData(form);
     for (let [key, value] of data) {
       console.log({ value });
-      task = {
-        ...task,
+      taskFormValue = {
+        ...taskFormValue,
         [key]: value,
       };
     }
-    console.log({ task });
-    user.addTaskToProject(task.projectId, task);
-    console.log("User after project add", user);
     let selectedProject = user
       .getAllProjects()
-      .find((item) => item?.id === +task.projectId);
+      .find((item) => item.id === +taskFormValue.projectId);
     console.log({ selectedProject });
+    const task = new Task(
+      selectedProject?.tasks.length + 1,
+      taskFormValue.projectId,
+      taskFormValue.title,
+      taskFormValue.description,
+      taskFormValue.priority,
+      taskFormValue.due_date,
+      taskFormValue.completed
+    );
+    user.addTaskToProject(task);
     taskRender.switchActiveProjectId(selectedProject?.id);
     taskRender.renderActiveTasks();
     closeModal();
@@ -256,7 +290,7 @@ function projectActionController() {
   };
 
   const addNewProject = () => {
-    let project = {
+    let projectFormValue = {
       id: user.getAllProjects().length + 1,
     };
     const form = document.getElementById("addNewProjectForm");
@@ -268,12 +302,20 @@ function projectActionController() {
         alert("Please fill the title and description!");
         return;
       }
-      project = {
-        ...project,
+      projectFormValue = {
+        ...projectFormValue,
         [key]: value,
       };
       i++;
     }
+    const project = new Project(
+      projectFormValue.id,
+      projectFormValue.title,
+      projectFormValue.description,
+      projectFormValue.priority,
+      projectFormValue.due_date,
+      projectFormValue.completed
+    );
     user.addProject(project);
     projectRender.handleProjectClick(project?.id);
     closeModal();
