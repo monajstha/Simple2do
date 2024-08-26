@@ -47,14 +47,15 @@ const task3 = new Task(
   false
 );
 
-// user.addProject(project);
-// user.addTaskToProject(project.id, task);
+user.addProject(project);
+user.addTaskToProject(task);
+user.addTaskToProject(task2);
+console.log(project.getAllTasks());
+// project.deleteATask(task.id);
 // user.addTaskToProject(project.id, task2);
+// user.addingTask(project, task3);
 // console.log(project.getAllTasks());
-// // user.addTaskToProject(project.id, task2);
-// // user.addingTask(project, task3);
-// // console.log(project.getAllTasks());
-// console.log(user);
+console.log(user);
 
 function taskRenderController() {
   const projectViewDiv = document.createElement("div");
@@ -73,6 +74,30 @@ function taskRenderController() {
     return activeProjectId;
   };
 
+  const deleteTask = (taskId) => {
+    // Find the project that contains this task
+    const activeProject = user
+      .getAllProjects()
+      .find((project) => project.id === getActiveProjectId());
+
+    if (activeProject) {
+      activeProject.deleteATask(taskId);
+      taskCardRender(activeProject.getAllTasks());
+    }
+  };
+
+  const changeTaskStatus = (taskId) => {
+    const activeProject = user
+      .getAllProjects()
+      .find((project) => project.id === getActiveProjectId());
+
+    if (activeProject) {
+      activeProject.updateTaskStatus(taskId);
+      taskCardRender(activeProject.getAllTasks());
+      console.log(activeProject.getAllTasks());
+    }
+  };
+
   const taskCardRender = (tasks) => {
     taskCardWrapper.innerHTML = "";
     if (tasks.length) {
@@ -83,13 +108,15 @@ function taskRenderController() {
         taskCard.id = "taskCard";
         taskCard.innerHTML = `
             <div id="taskInfoWrapper">
-            <input id="taskCheckbox" type="checkbox" value=${task.completed} >
+            <input id="taskCheckbox" type="checkbox" name="completed" value=${
+              task.completed
+            }" ${task.completed ? "checked" : ""} >
             <div id="taskContentDiv">
               <div id="taskTitle">${task.title}</div>
               <div>Due Date: ${task.due_date}</div>
             </div>
             </div>
-            <button id="deleteBtn">Delete</button>
+            <button id="deleteTaskBtn" >Delete</button>
           `;
         taskCard.style.borderColor =
           task?.priority.toLowerCase() === "high"
@@ -97,9 +124,21 @@ function taskRenderController() {
             : task.priority === "medium"
             ? "#004e92"
             : "#1a9b11";
+
+        // Add event listener to the delete button
+        const deleteTaskBtn = taskCard.querySelector("#deleteTaskBtn");
+        deleteTaskBtn.addEventListener("click", () => {
+          deleteTask(task.id); // Call the deleteTask function when the button is clicked
+        });
+
+        // Add event listener to the checkbox
+        const taskCheckbox = taskCard.querySelector("#taskCheckbox");
+        taskCheckbox.addEventListener("click", () => {
+          changeTaskStatus(task.id);
+        });
+
         taskCardWrapper.append(taskCard);
       });
-      // taskCardWrapper.append(taskCardContent);
     } else {
       taskCardWrapper.innerHTML = "Click on Add task to add tasks!";
     }
@@ -240,7 +279,7 @@ function taskActionController() {
     form.reset();
   };
 
-  // Populate select in add task form
+  // Populate select options in add task form
   const getAllProjectsForSelect = () => {
     const optGroup = document.querySelector("#projectOptionGroup");
     const options = user.getAllProjects().map((project) => {
@@ -263,9 +302,12 @@ function projectActionController() {
   const projectRender = projectsRenderController();
   const taskAction = taskActionController();
   const dialog = document.querySelector("#newProjectDialog");
-  const addProjectBtn = document.querySelector("#addProjectBtn"); // Uncommented this line
+  const addProjectBtn = document.querySelector("#addProjectBtn");
   const closeBtn = document.querySelector("#closeBtn");
   const addNewProjectBtn = document.querySelector("#addNewProjectBtn");
+  const deleteTaskBtn = document.querySelector("#deleteTaskBtn");
+
+  // deleteTaskBtn.addEventListener("click", () => {});
 
   addProjectBtn.addEventListener("click", () => {
     displayModal();

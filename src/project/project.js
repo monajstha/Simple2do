@@ -5,7 +5,7 @@ class Project {
     description,
     priority,
     due_date,
-    completed = false,
+    completed = "incomplete",
     tasks = []
   ) {
     this.id = id;
@@ -29,7 +29,7 @@ class Project {
     this.completed = !this.completed;
   }
 
-  setTaskStatus(id) {
+  updateTaskStatus(id) {
     this.tasks?.map((item) => {
       if (item?.id === id) {
         item.completed = !item.completed;
