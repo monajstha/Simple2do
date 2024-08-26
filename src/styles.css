@@ -91,6 +91,14 @@ dialog::backdrop {
 
 #taskInfoWrapper {
   display: flex;
+  width: 90%;
+  /* background-color: green; */
+}
+
+#taskContentDiv {
+  /* background-color: red; */
+  width: 100%;
+  cursor: pointer;
 }
 
 #taskCheckbox {
@@ -111,4 +119,30 @@ dialog::backdrop {
 
 #projectListingCard {
   padding: 8px;
+}
+
+/* task details */
+#activeTaskDetails {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  margin-top: 12px;
+}
+
+#activeTaskInfo {
+  /* background-color: #004e92; */
+  height: 100dvh;
+}
+
+#activeProjectInfo {
+  /* background-color: #fff; */
+  height: 100dvh;
+}
+
+#activeTaskKeyVal {
+  padding: 12px;
+}
+
+#activeTaskTitle:hover {
+  border: 1px solid lightgray;
+  cursor: text;
 }

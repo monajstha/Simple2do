@@ -58,6 +58,8 @@ console.log(project.getAllTasks());
 console.log(user);
 
 function taskRenderController() {
+  const taskDetailsViewDiv = document.createElement("div");
+  taskDetailsViewDiv.id = "taskDetailsViewDiv";
   const projectViewDiv = document.createElement("div");
   const taskCardWrapper = document.createElement("div");
   taskCardWrapper.id = "taskCardWrapper";
@@ -65,6 +67,7 @@ function taskRenderController() {
 
   const projects = user.getAllProjects();
   let activeProjectId = projects[0]?.id;
+  let activeTaskId;
 
   const switchActiveProjectId = (projectId) => {
     activeProjectId = projectId;
@@ -76,9 +79,9 @@ function taskRenderController() {
 
   const deleteTask = (taskId) => {
     // Find the project that contains this task
-    const activeProject = user
-      .getAllProjects()
-      .find((project) => project.id === getActiveProjectId());
+    const activeProject = projects.find(
+      (project) => project.id === getActiveProjectId()
+    );
 
     if (activeProject) {
       activeProject.deleteATask(taskId);
@@ -86,16 +89,17 @@ function taskRenderController() {
     }
   };
 
-  const changeTaskStatus = (taskId) => {
-    const activeProject = user
-      .getAllProjects()
-      .find((project) => project.id === getActiveProjectId());
+  const handleTaskCheckboxToggle = (taskId) => {
+    console.log("toggled!!");
+    const activeProject = projects.find(
+      (project) => project.id === getActiveProjectId()
+    );
 
-    if (activeProject) {
-      activeProject.updateTaskStatus(taskId);
-      taskCardRender(activeProject.getAllTasks());
-      console.log(activeProject.getAllTasks());
-    }
+    if (!activeProject) return;
+
+    activeProject.updateTaskStatus(taskId);
+    taskCardRender(activeProject.getAllTasks());
+    console.log(activeProject.getAllTasks());
   };
 
   const taskCardRender = (tasks) => {
@@ -108,13 +112,13 @@ function taskRenderController() {
         taskCard.id = "taskCard";
         taskCard.innerHTML = `
             <div id="taskInfoWrapper">
-            <input id="taskCheckbox" type="checkbox" name="completed" value=${
-              task.completed
-            }" ${task.completed ? "checked" : ""} >
-            <div id="taskContentDiv">
-              <div id="taskTitle">${task.title}</div>
-              <div>Due Date: ${task.due_date}</div>
-            </div>
+              <input id="taskCheckbox" type="checkbox" name="completed" value=${
+                task.completed
+              }" ${task.completed ? "checked" : ""}>
+              <div id="taskContentDiv">
+                <div id="taskTitle">${task.title}</div>
+                <div>Due Date: ${task.due_date}</div>
+              </div>
             </div>
             <button id="deleteTaskBtn" >Delete</button>
           `;
@@ -125,6 +129,11 @@ function taskRenderController() {
             ? "#004e92"
             : "#1a9b11";
 
+        const taskContentDiv = taskCard.querySelector("#taskContentDiv");
+        taskContentDiv.addEventListener("click", () => {
+          renderActiveTaskDetails(task.id);
+        });
+
         // Add event listener to the delete button
         const deleteTaskBtn = taskCard.querySelector("#deleteTaskBtn");
         deleteTaskBtn.addEventListener("click", () => {
@@ -134,7 +143,7 @@ function taskRenderController() {
         // Add event listener to the checkbox
         const taskCheckbox = taskCard.querySelector("#taskCheckbox");
         taskCheckbox.addEventListener("click", () => {
-          changeTaskStatus(task.id);
+          handleTaskCheckboxToggle(task.id);
         });
 
         taskCardWrapper.append(taskCard);
@@ -164,6 +173,52 @@ function taskRenderController() {
     projectViewRender();
     infoViewDiv.append(projectViewDiv);
     contentDiv.append(infoViewDiv);
+  };
+
+  const renderActiveTaskDetails = (taskId) => {
+    const activeProject = projects.find((item) => item.id === +activeProjectId);
+    const activeTask = activeProject.tasks.find((item) => item.id === +taskId);
+    if (!activeTask) return;
+    infoViewDiv.textContent = "";
+    taskDetailsViewDiv.innerHTML = `
+    <button id="backBtn">Back</button>
+    <div id="activeTaskDetails">
+      <div id="activeTaskInfo">
+        <h1 id="activeTaskTitle">${activeTask?.title}</h1>
+        <p>${activeTask?.description}</p>
+      </div>
+    
+      <div id="activeProjectInfo">
+        <div id="activeTaskKeyVal">
+          <p>Project</p>
+          <h4>  ${activeProject.title}</h4>
+        </div>
+
+        <div id="activeTaskKeyVal">
+        <p>Priority</p>
+        <h4>${activeTask?.priority}</h4>
+      </div>
+
+        <div id="activeTaskKeyVal">
+          <p>Due Date</p>
+          <h4>${activeTask?.due_date}</h4>
+        </div>
+
+      <div id="activeTaskKeyVal">
+      <p>Completed</p>
+      <h4>${activeTask?.completed ? "Yes" : "No"}</h4>
+      </div>
+      <div>
+    </div>
+   
+  `;
+
+    const backBtn = taskDetailsViewDiv.querySelector("#backBtn");
+    backBtn.addEventListener("click", () => {
+      // Previous view i.e. the project view
+      renderActiveTasks();
+    });
+    infoViewDiv.append(taskDetailsViewDiv);
   };
 
   return {
