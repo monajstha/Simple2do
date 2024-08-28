@@ -112,6 +112,7 @@ function taskRenderController() {
 
   const taskCardRender = (tasks) => {
     taskCardWrapper.innerHTML = "";
+    console.log({ tasks });
     if (tasks.length) {
       // const taskCard = document.createElement("div");
       // taskCard.id = "taskCard";
@@ -163,7 +164,9 @@ function taskRenderController() {
 
   const projectViewRender = () => {
     infoViewDiv.textContent = "";
-    const activeProject = projects.find((item) => item.id === activeProjectId);
+    console.log({ activeProjectId });
+    const activeProject = projects.find((item) => item.id === +activeProjectId);
+    console.log({ activeProject });
     taskCardRender(activeProject?.tasks);
     projectViewDiv.innerHTML = `<div>
       <div>
@@ -321,8 +324,15 @@ function taskRenderController() {
       optGroup.id = "projectOptionGroup";
       console.log({ optGroup });
       const options = user.getAllProjects().map((project) => {
-        console.log({ project });
-        return `<option value=${project.id}>${project.title}</option>`;
+        let optionsStr = "";
+        if (activeProject?.title === project.title) {
+          optionsStr =
+            optionsStr +
+            `<option selected value=${project.id}>${project.title}</option>`;
+        } else {
+          optionsStr = `<option value=${project.id}>${project.title}</option>`;
+        }
+        return optionsStr;
       });
       optGroup.innerHTML = options;
       projectSelect.append(optGroup);
@@ -348,6 +358,19 @@ function taskRenderController() {
         console.log({ activeTask });
         // Update tasks if any update has been made
         user.updateTasks(activeTask);
+        const msgDialog = document.querySelector("#projectUpdatedDialog");
+        const dialogTitle = document.querySelector("#dialogTitle");
+        dialogTitle.textContent = `Task switched to ${newProjectTitle}`;
+        const dialogMessage = document.querySelector("#dialogMessage");
+        dialogMessage.textContent = `Your task ${activeTask.title} has been switched to ${newProjectTitle} from ${activeProject.title}`;
+        msgDialog.showModal();
+        const dialogOkBtn = document.querySelector("#dialogOkBtn");
+        dialogOkBtn.addEventListener("click", () => {
+          msgDialog.close();
+          const projectRender = projectsRenderController();
+          projectRender.handleProjectClick(e.target.value);
+          projectRender.renderProjects();
+        });
       };
     });
 
@@ -445,7 +468,7 @@ function projectsRenderController() {
 
       // Set the initial background color
       projectListingCard.style.backgroundColor =
-        item?.id === task.getActiveProjectId()
+        item?.id === +task.getActiveProjectId()
           ? "rgba(51, 170, 51, 0.7)"
           : "rgb(101, 98, 98)";
 

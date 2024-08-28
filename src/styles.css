@@ -187,3 +187,7 @@ task details
   border: 1px solid lightgray;
   cursor: text;
 }
+
+#projectUpdatedDialog {
+  padding: 12px;
+}
