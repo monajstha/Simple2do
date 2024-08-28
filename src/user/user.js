@@ -21,7 +21,25 @@ class User {
       (item) => item.id === +task.projectId
     );
     console.log("Task instance? ", task instanceof Task);
-    selectedProject.addTask(task);
+    selectedProject.addTask({
+      id: selectedProject.tasks.length + 1,
+      ...task,
+    });
+  }
+
+  updateTasks(task) {
+    this.projects.forEach((project) => {
+      const selectedTask = project.tasks.find(
+        (taskItem) => taskItem.id === +task.id
+      );
+      if (selectedTask) {
+        console.log({ selectedTask });
+        console.log("Inside Update Tasks", project instanceof Project);
+        project.deleteATask(selectedTask.id);
+      }
+    });
+
+    this.addTaskToProject(task);
   }
 
   getAllProjects() {

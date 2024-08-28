@@ -104,13 +104,20 @@ dialog::backdrop {
 #taskCheckbox {
   width: 18px;
   height: 18px;
+  cursor: pointer;
 }
 
-#deleteBtn {
-  background-color: "red";
-  color: "white";
-  font-weight: 500;
-  padding: 2px;
+#deleteTaskBtn {
+  background-color: red;
+  border: 0px;
+  padding: 4px 8px;
+  color: white;
+  border-radius: 3px;
+  font-weight: medium;
+}
+
+#taskCard :hover {
+  cursor: pointer;
 }
 
 #projectsListingDiv {
@@ -121,7 +128,11 @@ dialog::backdrop {
   padding: 8px;
 }
 
-/* task details */
+/*
+
+task details 
+
+*/
 #activeTaskDetails {
   display: grid;
   grid-template-columns: 3fr 1fr;
@@ -138,7 +149,8 @@ dialog::backdrop {
   height: 100dvh;
 }
 
-#activeTaskKeyVal {
+#activeTaskKeyVal,
+#activeTaskProject {
   padding: 12px;
 }
 
@@ -170,7 +182,8 @@ dialog::backdrop {
 }
 
 #activeTaskTitle:hover,
-#activeTaskDescription:hover {
+#activeTaskDescription:hover,
+#activeTaskProjectTitle:hover {
   border: 1px solid lightgray;
   cursor: text;
 }

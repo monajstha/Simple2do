@@ -18,6 +18,14 @@ const project = new Project(
   "2024-08-25",
   false
 );
+const project2 = new Project(
+  2,
+  "Project 2",
+  "This is a project 2",
+  "High",
+  "2024-08-25",
+  false
+);
 const task = new Task(
   1,
   1,
@@ -48,13 +56,14 @@ const task3 = new Task(
 );
 
 user.addProject(project);
+user.addProject(project2);
 user.addTaskToProject(task);
 user.addTaskToProject(task2);
 console.log(project.getAllTasks());
 // project.deleteATask(task.id);
 // user.addTaskToProject(project.id, task2);
 // user.addingTask(project, task3);
-// console.log(project.getAllTasks());
+console.log(project.getAllTasks());
 console.log(user);
 
 function taskRenderController() {
@@ -119,7 +128,7 @@ function taskRenderController() {
                 <div>Due Date: ${task.due_date}</div>
               </div>
             </div>
-            <button id="deleteTaskBtn" >Delete</button>
+            <button id="deleteTaskBtn">Delete</button>
           `;
         taskCard.style.borderColor =
           task?.priority.toLowerCase() === "high"
@@ -174,9 +183,56 @@ function taskRenderController() {
     contentDiv.append(infoViewDiv);
   };
 
+  // Populate select options in add task form
+  const getAllProjectsForSelect = () => {
+    const optGroup = document.querySelector("#projectOptionGroup");
+    console.log({ optGroup });
+    const options = user.getAllProjects().map((project) => {
+      console.log({ project });
+      return `<option value=${project.id}>${project.title}</option>`;
+    });
+    optGroup.innerHTML = options;
+    console.log(optGroup);
+  };
+
+  const renderEditPrioritySelect = () => {
+    const prioritySelect = document.createElement("select");
+    prioritySelect.id = "prioritySelect";
+    const optGroup = document.createElement("optgroup");
+    optGroup.id = "priorityOptionGroup";
+    const options = ["High", "Medium", "Low"].map((item) => {
+      return `<option value=${item}>${item}</option>`;
+    });
+    prioritySelect.append(optGroup);
+  };
+
+  const handleEditPriority = () => {
+    const activeTaskPriority = document.querySelector("#activeTaskPriority");
+    const prioritySelect = document.querySelector("#prioritySelect");
+    activeTaskPriority.textContent = "";
+    const activeTaskPrioirtyDiv = document.querySelector(
+      "#activeTaskPrioirtyDiv"
+    );
+    activeTaskPrioirtyDiv.append(prioritySelect);
+    // prioritySelect.onchange((e) => {
+    //   activeProject.updateTaskDetails(
+    //     activeTask.id,
+    //     "projectId",
+    //     e.target.value
+    //   );
+    //   const newProjectTitle =
+    //     projectSelect.options[projectSelect.selectedIndex].text;
+    //   console.log("text?", newProjectTitle);
+    //   activeTaskPriority.textContent = newProjectTitle;
+    //   activeTaskPrioirtyDiv.removeChild(renderEditPrioritySelect());
+    // });
+  };
+
   const renderActiveTaskDetails = (taskId) => {
     const activeProject = projects.find((item) => item.id === +activeProjectId);
     const activeTask = activeProject.tasks.find((item) => item.id === +taskId);
+    // console.log({ activeTask });
+
     if (!activeTask) return;
     infoViewDiv.textContent = "";
     taskDetailsViewDiv.innerHTML = `
@@ -193,14 +249,19 @@ function taskRenderController() {
       </div>
     
       <div id="activeProjectInfo">
-        <div id="activeTaskKeyVal">
+        <div id="activeTaskProject">
           <p>Project</p>
-          <h4>  ${activeProject.title}</h4>
+          <div id="activeTaskProjectTitleDiv">
+            <h4 id="activeTaskProjectTitle">  ${activeProject.title}</h4>
+
+          </div>
         </div>
 
         <div id="activeTaskKeyVal">
-        <p>Priority</p>
-        <h4>${activeTask?.priority}</h4>
+          <p>Priority</p>
+          <div id="activeTaskPriorityDiv">
+            <h4 id="activeTaskPriority">${activeTask?.priority}</h4>
+          </div>
       </div>
 
         <div id="activeTaskKeyVal">
@@ -215,6 +276,7 @@ function taskRenderController() {
       <div>
     </div>
   `;
+    renderEditPrioritySelect();
 
     const backBtn = taskDetailsViewDiv.querySelector("#backBtn");
     backBtn.addEventListener("click", () => {
@@ -222,6 +284,7 @@ function taskRenderController() {
       renderActiveTasks();
     });
 
+    // Edit Task Title
     const activeTaskTitle =
       taskDetailsViewDiv.querySelector("#activeTaskTitle");
     activeTaskTitle.addEventListener("click", () => {
@@ -233,6 +296,7 @@ function taskRenderController() {
       );
     });
 
+    // Edit Task description
     const activeTaskDescription = taskDetailsViewDiv.querySelector(
       "#activeTaskDescription"
     );
@@ -244,6 +308,60 @@ function taskRenderController() {
         "#activeTaskDescriptionDiv"
       );
     });
+
+    // Edit Task Project Id/Title
+    const activeTaskProjectTitle = taskDetailsViewDiv.querySelector(
+      "#activeTaskProjectTitle"
+    );
+
+    activeTaskProjectTitle.addEventListener("click", () => {
+      const projectSelect = document.createElement("select");
+      projectSelect.id = "projectId";
+      const optGroup = document.createElement("optgroup");
+      optGroup.id = "projectOptionGroup";
+      console.log({ optGroup });
+      const options = user.getAllProjects().map((project) => {
+        console.log({ project });
+        return `<option value=${project.id}>${project.title}</option>`;
+      });
+      optGroup.innerHTML = options;
+      projectSelect.append(optGroup);
+
+      activeTaskProjectTitle.textContent = "";
+
+      // const projectSelect = document.querySelector("#projectId");
+      const activeTaskProjectTitleDiv = document.querySelector(
+        "#activeTaskProjectTitleDiv"
+      );
+      activeTaskProjectTitleDiv.append(projectSelect);
+      projectSelect.onchange = (e) => {
+        activeProject.updateTaskDetails(
+          activeTask.id,
+          "projectId",
+          e.target.value
+        );
+        const newProjectTitle =
+          projectSelect.options[projectSelect.selectedIndex].text;
+        console.log("text?", newProjectTitle);
+        activeTaskProjectTitle.textContent = newProjectTitle;
+        activeTaskProjectTitleDiv.removeChild(projectSelect);
+        console.log({ activeTask });
+        // Update tasks if any update has been made
+        user.updateTasks(activeTask);
+      };
+    });
+
+    // const projectSelectElement = document.getElementById("projectId");
+    // projectSelectElement?.addEventListener("selectionchange", () => {
+    //   const projectSelectValue = projectSelectElement.value;
+    //   // console.log({ projectSelectElement }, { projectSelectValue });
+    // });
+
+    const activeTaskPriority = document.getElementById("activeTaskPriority");
+    console.log({ activeTaskPriority });
+    // activeTaskPriority.addEventListener("click", () => {
+    //   handleEditPriority();
+    // });
 
     infoViewDiv.append(taskDetailsViewDiv);
   };
@@ -297,10 +415,13 @@ function taskRenderController() {
     activeTaskHeaderDiv.append(editTaskInfoDiv);
   };
 
+  // getAllProjectsForSelect();
+
   return {
     switchActiveProjectId,
     getActiveProjectId,
     renderActiveTasks,
+    getAllProjectsForSelect,
   };
 }
 
@@ -410,22 +531,12 @@ function taskActionController() {
     form.reset();
   };
 
-  // Populate select options in add task form
-  const getAllProjectsForSelect = () => {
-    const optGroup = document.querySelector("#projectOptionGroup");
-    const options = user.getAllProjects().map((project) => {
-      console.log({ project });
-      return `<option value=${project.id}>${project.title}</option>`;
-    });
-    optGroup.innerHTML = options;
-    console.log(optGroup);
-  };
   // Initial project select load for add task form
-  getAllProjectsForSelect();
+  taskRender.getAllProjectsForSelect();
   return {
     // getActiveProjectId: taskRender.getActiveProjectId,
     switchActiveProjectId: taskRender.switchActiveProjectId,
-    getAllProjectsForSelect,
+    getAllProjectsForSelect: taskRender.getAllProjectsForSelect,
   };
 }
 
