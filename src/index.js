@@ -107,7 +107,6 @@ function taskRenderController() {
 
     activeProject.updateTaskStatus(taskId);
     taskCardRender(activeProject.getAllTasks());
-    console.log(activeProject.getAllTasks());
   };
 
   const taskCardRender = (tasks) => {
@@ -198,43 +197,10 @@ function taskRenderController() {
     console.log(optGroup);
   };
 
-  const renderEditPrioritySelect = () => {
-    const prioritySelect = document.createElement("select");
-    prioritySelect.id = "prioritySelect";
-    const optGroup = document.createElement("optgroup");
-    optGroup.id = "priorityOptionGroup";
-    const options = ["High", "Medium", "Low"].map((item) => {
-      return `<option value=${item}>${item}</option>`;
-    });
-    prioritySelect.append(optGroup);
-  };
-
-  const handleEditPriority = () => {
-    const activeTaskPriority = document.querySelector("#activeTaskPriority");
-    const prioritySelect = document.querySelector("#prioritySelect");
-    activeTaskPriority.textContent = "";
-    const activeTaskPrioirtyDiv = document.querySelector(
-      "#activeTaskPrioirtyDiv"
-    );
-    activeTaskPrioirtyDiv.append(prioritySelect);
-    // prioritySelect.onchange((e) => {
-    //   activeProject.updateTaskDetails(
-    //     activeTask.id,
-    //     "projectId",
-    //     e.target.value
-    //   );
-    //   const newProjectTitle =
-    //     projectSelect.options[projectSelect.selectedIndex].text;
-    //   console.log("text?", newProjectTitle);
-    //   activeTaskPriority.textContent = newProjectTitle;
-    //   activeTaskPrioirtyDiv.removeChild(renderEditPrioritySelect());
-    // });
-  };
-
   const renderActiveTaskDetails = (taskId) => {
     const activeProject = projects.find((item) => item.id === +activeProjectId);
     const activeTask = activeProject.tasks.find((item) => item.id === +taskId);
-    // console.log({ activeTask });
+    console.log({ activeTask });
 
     if (!activeTask) return;
     infoViewDiv.textContent = "";
@@ -242,13 +208,21 @@ function taskRenderController() {
     <button id="backBtn">Back</button>
     <div id="activeTaskDetails">
       <div id="activeTaskInfo">
-          <div id="activeTaskHeaderDiv">
-            <h1 id="activeTaskTitle">${activeTask?.title}</h1>
+        <div id="activeTaskTitleWrapper">
+          <input id="taskStatusCheckbox" type="checkbox" name="completed" value=${
+            activeTask.completed
+          }" ${activeTask.completed ? "checked" : ""}>
+          <div id="activeTaskInfoWrapper">
+            <div id="activeTaskHeaderDiv">
+              <h1 id="activeTaskTitle">${activeTask?.title}</h1>
+            </div>
+            <div id="activeTaskDescriptionDiv">
+              <p id="activeTaskDescription">${activeTask?.description}</p>
+            </div>
           </div>
+        </div>
 
-          <div id="activeTaskDescriptionDiv">
-            <p id="activeTaskDescription">${activeTask?.description}</p>
-          </div>
+          
       </div>
     
       <div id="activeProjectInfo">
@@ -269,31 +243,53 @@ function taskRenderController() {
 
         <div id="activeTaskKeyVal">
           <p>Due Date</p>
-          <h4>${activeTask?.due_date}</h4>
+          <div id="activeTaskDueDateDiv">
+            <h4 id="activeTaskDueDate">${activeTask?.due_date}</h4>
+          </div>
         </div>
 
       <div id="activeTaskKeyVal">
       <p>Completed</p>
-      <h4>${activeTask?.completed ? "Yes" : "No"}</h4>
+      <div id="activeTaskCompletedDiv">
+        <h4 id="activeTaskCompleted">${
+          activeTask?.completed ? "Yes" : "No"
+        }</h4>
+      </div>
       </div>
       <div>
     </div>
   `;
-    renderEditPrioritySelect();
+    handleClickOnTaskDetails(taskId);
+    infoViewDiv.append(taskDetailsViewDiv);
+  };
+
+  const handleClickOnTaskDetails = (taskId) => {
+    const activeProject = projects.find((item) => item.id === +activeProjectId);
+    const activeTask = activeProject.tasks.find((item) => item.id === +taskId);
+    const taskAction = taskActionController();
+
+    const taskCheckbox = taskDetailsViewDiv.querySelector(
+      "#taskStatusCheckbox"
+    );
+    taskCheckbox.addEventListener("click", () => {
+      activeProject.updateTaskStatus(activeTask.id);
+      renderActiveTaskDetails(taskId);
+    });
 
     const backBtn = taskDetailsViewDiv.querySelector("#backBtn");
     backBtn.addEventListener("click", () => {
       // Previous view i.e. the project view
-      renderActiveTasks();
+      renderActiveTasks(activeTask.id);
     });
 
     // Edit Task Title
     const activeTaskTitle =
       taskDetailsViewDiv.querySelector("#activeTaskTitle");
     activeTaskTitle.addEventListener("click", () => {
-      editTaskDetailDiv(
+      taskAction.editInputTypeTaskDetails(
         activeTask.id,
         "title",
+        "text",
         "#activeTaskTitle",
         "#activeTaskHeaderDiv"
       );
@@ -304,9 +300,10 @@ function taskRenderController() {
       "#activeTaskDescription"
     );
     activeTaskDescription.addEventListener("click", () => {
-      editTaskDetailDiv(
+      taskAction.editInputTypeTaskDetails(
         activeTask.id,
         "description",
+        "text",
         "#activeTaskDescription",
         "#activeTaskDescriptionDiv"
       );
@@ -316,7 +313,6 @@ function taskRenderController() {
     const activeTaskProjectTitle = taskDetailsViewDiv.querySelector(
       "#activeTaskProjectTitle"
     );
-
     activeTaskProjectTitle.addEventListener("click", () => {
       const projectSelect = document.createElement("select");
       projectSelect.id = "projectId";
@@ -374,77 +370,70 @@ function taskRenderController() {
       };
     });
 
-    // const projectSelectElement = document.getElementById("projectId");
-    // projectSelectElement?.addEventListener("selectionchange", () => {
-    //   const projectSelectValue = projectSelectElement.value;
-    //   // console.log({ projectSelectElement }, { projectSelectValue });
-    // });
+    // Edit Task Priority
+    const activeTaskPriority = taskDetailsViewDiv.querySelector(
+      "#activeTaskPriority"
+    );
+    activeTaskPriority.addEventListener("click", () => {
+      const prioritySelect = document.createElement("select");
+      prioritySelect.id = "projectId";
+      const optGroup = document.createElement("optgroup");
+      optGroup.id = "projectOptionGroup";
+      console.log({ optGroup });
+      const options = ["High", "Medium", "Low"].map((priority) => {
+        let optionsStr = "";
+        if (activeProject?.priority === priority) {
+          optionsStr =
+            optionsStr +
+            `<option selected value=${priority}>${priority}</option>`;
+        } else {
+          optionsStr = `<option value=${priority}>${priority}</option>`;
+        }
+        return optionsStr;
+      });
+      optGroup.innerHTML = options;
+      prioritySelect.append(optGroup);
 
-    const activeTaskPriority = document.getElementById("activeTaskPriority");
-    console.log({ activeTaskPriority });
-    // activeTaskPriority.addEventListener("click", () => {
-    //   handleEditPriority();
-    // });
+      activeTaskPriority.textContent = "";
 
-    infoViewDiv.append(taskDetailsViewDiv);
+      // const prioritySelect = document.querySelector("#projectId");
+      const activeTaskPriorityDiv = document.querySelector(
+        "#activeTaskPriorityDiv"
+      );
+      activeTaskPriorityDiv.append(prioritySelect);
+      prioritySelect.onchange = (e) => {
+        activeProject.updateTaskDetails(
+          activeTask.id,
+          "priority",
+          e.target.value
+        );
+        const newProjectPriority =
+          prioritySelect.options[prioritySelect.selectedIndex].text;
+        activeTaskPriority.textContent = newProjectPriority;
+        activeTaskPriorityDiv.removeChild(prioritySelect);
+      };
+    });
+
+    // Edit Task Due Date
+    const activeTaskDueDate =
+      taskDetailsViewDiv.querySelector("#activeTaskDueDate");
+    activeTaskDueDate.addEventListener("click", () => {
+      taskAction.editInputTypeTaskDetails(
+        activeTask.id,
+        "due_date",
+        "date",
+        "#activeTaskDueDate",
+        "#activeTaskDueDateDiv"
+      );
+    });
   };
-
-  const editTaskDetailDiv = (
-    taskId,
-    key,
-    selectedDetail,
-    selectedDetailDiv
-  ) => {
-    const activeProject = projects.find((item) => item.id === +activeProjectId);
-    const activeTask = activeProject.tasks.find((item) => item.id === +taskId);
-    const activeTaskTitle = taskDetailsViewDiv.querySelector(selectedDetail);
-
-    activeTaskTitle.textContent = "";
-    const activeTaskHeaderDiv =
-      taskDetailsViewDiv.querySelector(selectedDetailDiv);
-
-    const editTaskInfoDiv = document.createElement("div");
-    const input = document.createElement("input");
-    input.id = key;
-    input.type = "text";
-    input.value = activeTask[key];
-    input.onchange = (text) => {
-      console.log("Text", text);
-    };
-    input.autofocus;
-
-    const buttonWrapper = document.createElement("div");
-    buttonWrapper.id = "buttonWrapper";
-    const saveBtn = document.createElement("button");
-    saveBtn.id = "saveBtn";
-    saveBtn.textContent = "Save";
-    const cancelBtn = document.createElement("button");
-    cancelBtn.id = "cancelBtn";
-    cancelBtn.textContent = "Cancel";
-    buttonWrapper.append(cancelBtn, saveBtn);
-
-    saveBtn.onclick = () => {
-      activeTaskHeaderDiv.textContent = "";
-      activeProject.updateTaskDetails(activeTask.id, input.id, input.value);
-      activeTaskTitle.textContent = input.value;
-      activeTaskHeaderDiv.append(activeTaskTitle);
-    };
-
-    cancelBtn.onclick = () => {
-      renderActiveTaskDetails(activeTask.id);
-    };
-
-    editTaskInfoDiv.append(input, buttonWrapper);
-    activeTaskHeaderDiv.append(editTaskInfoDiv);
-  };
-
-  // getAllProjectsForSelect();
 
   return {
     switchActiveProjectId,
     getActiveProjectId,
     renderActiveTasks,
     getAllProjectsForSelect,
+    renderActiveTaskDetails,
   };
 }
 
@@ -554,12 +543,66 @@ function taskActionController() {
     form.reset();
   };
 
+  const editInputTypeTaskDetails = (
+    taskId,
+    key,
+    inputType,
+    selectedDetail,
+    selectedDetailDiv
+  ) => {
+    const activeProject = user
+      .getAllProjects()
+      .find((item) => item.id === +taskRender.getActiveProjectId());
+    const activeTask = activeProject.tasks.find((item) => item.id === +taskId);
+    const taskDetailsViewDiv = document.querySelector("#taskDetailsViewDiv");
+    const selectedDetailElement =
+      taskDetailsViewDiv.querySelector(selectedDetail);
+    const selectedDetailElementDiv =
+      taskDetailsViewDiv.querySelector(selectedDetailDiv);
+
+    selectedDetailElement.textContent = "";
+    const editTaskInfoDiv = document.createElement("div");
+    const input = document.createElement("input");
+    input.id = key;
+    input.type = inputType;
+    input.value = activeTask[key];
+    input.onchange = (text) => {
+      console.log("Text", text);
+    };
+    input.autofocus;
+
+    const buttonWrapper = document.createElement("div");
+    buttonWrapper.id = "buttonWrapper";
+    const saveBtn = document.createElement("button");
+    saveBtn.id = "saveBtn";
+    saveBtn.textContent = "Save";
+    const cancelBtn = document.createElement("button");
+    cancelBtn.id = "cancelBtn";
+    cancelBtn.textContent = "Cancel";
+    buttonWrapper.append(cancelBtn, saveBtn);
+
+    saveBtn.onclick = () => {
+      selectedDetailElementDiv.textContent = "";
+      activeProject.updateTaskDetails(activeTask.id, input.id, input.value);
+      selectedDetailElement.textContent = input.value;
+      selectedDetailElementDiv.append(selectedDetailElement);
+    };
+
+    cancelBtn.onclick = () => {
+      taskRender.renderActiveTaskDetails(activeTask.id);
+    };
+
+    editTaskInfoDiv.append(input, buttonWrapper);
+    selectedDetailElementDiv.append(editTaskInfoDiv);
+  };
+
   // Initial project select load for add task form
   taskRender.getAllProjectsForSelect();
   return {
     // getActiveProjectId: taskRender.getActiveProjectId,
     switchActiveProjectId: taskRender.switchActiveProjectId,
     getAllProjectsForSelect: taskRender.getAllProjectsForSelect,
+    editInputTypeTaskDetails,
   };
 }
 

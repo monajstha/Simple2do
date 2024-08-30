@@ -107,6 +107,13 @@ dialog::backdrop {
   cursor: pointer;
 }
 
+#taskStatusCheckbox {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
 #deleteTaskBtn {
   background-color: red;
   border: 0px;
@@ -126,6 +133,7 @@ dialog::backdrop {
 
 #projectListingCard {
   padding: 8px;
+  cursor: pointer;
 }
 
 /*
@@ -183,11 +191,26 @@ task details
 
 #activeTaskTitle:hover,
 #activeTaskDescription:hover,
-#activeTaskProjectTitle:hover {
+#activeTaskProjectTitle:hover,
+#activeTaskPriority:hover,
+#activeTaskDueDate:hover {
   border: 1px solid lightgray;
   cursor: text;
 }
 
 #projectUpdatedDialog {
   padding: 12px;
+}
+
+#activeTaskTitleWrapper {
+  display: flex;
+  align-items: start;
+  /* background-color: red; */
+}
+
+#activeTaskInfoWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-left: 12px;
 }
