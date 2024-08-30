@@ -214,3 +214,14 @@ task details
   justify-content: flex-start;
   margin-left: 12px;
 }
+
+#taskNoteWrapper {
+  margin-top: 18px;
+  margin-left: 36px;
+}
+
+textarea {
+  text-align: start;
+  text-justify: auto;
+  padding: 12px;
+}

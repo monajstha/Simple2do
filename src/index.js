@@ -220,10 +220,13 @@ function taskRenderController() {
               <p id="activeTaskDescription">${activeTask?.description}</p>
             </div>
           </div>
-        </div>
-
-          
       </div>
+      <div id="taskNoteWrapper">
+       <textarea id="taskNote" rows="10" cols="80" placeholder="Enter your note">${
+         activeTask?.taskNote
+       }</textarea>
+      </div>
+        </div>
     
       <div id="activeProjectInfo">
         <div id="activeTaskProject">
@@ -307,6 +310,42 @@ function taskRenderController() {
         "#activeTaskDescription",
         "#activeTaskDescriptionDiv"
       );
+    });
+
+    // Add Task Note
+    const taskNoteWrapper =
+      taskDetailsViewDiv.querySelector("#taskNoteWrapper");
+    const taskNote = taskNoteWrapper.querySelector("#taskNote");
+    let taskNoteClickCount = 0;
+    taskNote.addEventListener("click", () => {
+      if (taskNoteClickCount > 0) return;
+      const buttonWrapper = document.createElement("div");
+      buttonWrapper.id = "buttonWrapper";
+      const saveBtn = document.createElement("button");
+      saveBtn.id = "saveBtn";
+      saveBtn.textContent = "Save";
+      const cancelBtn = document.createElement("button");
+      cancelBtn.id = "cancelBtn";
+      cancelBtn.textContent = "Cancel";
+      buttonWrapper.append(cancelBtn, saveBtn);
+      taskNoteWrapper.append(buttonWrapper);
+      taskNoteClickCount++;
+
+      saveBtn.onclick = () => {
+        activeProject.updateTaskDetails(
+          activeTask.id,
+          taskNote.id,
+          taskNote.value
+        );
+        taskNote.readOnly = true;
+        taskNoteWrapper.removeChild(buttonWrapper);
+        taskNoteClickCount = 0;
+      };
+
+      cancelBtn.onclick = () => {
+        renderActiveTaskDetails(activeTask.id);
+        taskNoteClickCount = 0;
+      };
     });
 
     // Edit Task Project Id/Title
