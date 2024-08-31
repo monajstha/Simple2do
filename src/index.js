@@ -467,12 +467,23 @@ function taskRenderController() {
 }
 
 function projectsRenderController() {
-  const task = taskRenderController();
+  const taskRender = taskRenderController();
 
   const handleProjectClick = (projectId) => {
     infoViewDiv.innerHTML = "";
-    task.switchActiveProjectId(projectId);
-    task.renderActiveTasks();
+    taskRender.switchActiveProjectId(projectId);
+    taskRender.renderActiveTasks();
+    document.querySelectorAll('[id^="projectListingCard_"]').forEach((card) => {
+      card.style.backgroundColor = "rgb(101, 98, 98)";
+      card.style.color = "#000";
+      card.style.fontWeight = "normal";
+    });
+    const activeProjectCard = projectsListingDiv.querySelector(
+      `#projectListingCard_${projectId}`
+    );
+    activeProjectCard.style.backgroundColor = "rgba(51, 170, 51, 0.7)";
+    activeProjectCard.style.color = "#ffff";
+    activeProjectCard.style.fontWeight = "bold";
   };
 
   const renderProjects = () => {
@@ -482,32 +493,25 @@ function projectsRenderController() {
     let allProjects = storedUser.projects.map((item, index) => {
       console.log({ item });
       const projectListingCard = document.createElement("div");
-      projectListingCard.id = `projectListingCard`;
+      projectListingCard.id = `projectListingCard_${item.id}`;
       // Render tasks on initial load
-      task.renderActiveTasks();
+      taskRender.renderActiveTasks();
       projectListingCard.textContent = `#${item.title}`;
+      projectListingCard.style.padding = "10px 16px";
+      projectListingCard.style.cursor = "pointer";
 
       // Set the initial background color
       projectListingCard.style.backgroundColor =
-        item?.id === +task.getActiveProjectId()
+        item?.id === +taskRender.getActiveProjectId()
           ? "rgba(51, 170, 51, 0.7)"
           : "rgb(101, 98, 98)";
       projectListingCard.style.color =
-        item?.id === +task.getActiveProjectId() ? "#fff" : "#000";
+        item?.id === +taskRender.getActiveProjectId() ? "#fff" : "#000";
       projectListingCard.style.fontWeight =
-        item?.id === +task.getActiveProjectId() ? "bold" : "normal";
+        item?.id === +taskRender.getActiveProjectId() ? "bold" : "normal";
 
       projectListingCard.addEventListener("click", () => {
         handleProjectClick(item?.id);
-        // Reset the background color for all cards
-        document.querySelectorAll("#projectListingCard").forEach((card) => {
-          card.style.backgroundColor = "rgb(101, 98, 98)";
-          card.style.color = "#000";
-          card.style.fontWeight = "normal";
-        });
-        projectListingCard.style.backgroundColor = "rgba(51, 170, 51, 0.7)";
-        projectListingCard.style.color = "#ffff";
-        projectListingCard.style.fontWeight = "bold";
       });
 
       projectsListingDiv.append(projectListingCard);
@@ -575,6 +579,18 @@ function taskActionController() {
     localStorage.setItem("user", JSON.stringify(user));
     taskRender.switchActiveProjectId(selectedProject?.id);
     taskRender.renderActiveTasks();
+    document.querySelectorAll('[id^="projectListingCard_"]').forEach((card) => {
+      card.style.backgroundColor = "rgb(101, 98, 98)";
+      card.style.color = "#000";
+      card.style.fontWeight = "normal";
+    });
+    const activeProjectCard = projectsListingDiv.querySelector(
+      `#projectListingCard_${selectedProject.id}`
+    );
+
+    activeProjectCard.style.backgroundColor = "rgba(51, 170, 51, 0.7)";
+    activeProjectCard.style.color = "#ffff";
+    activeProjectCard.style.fontWeight = "bold";
     closeModal();
     form.reset();
   };
