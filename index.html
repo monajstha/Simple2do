@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do</title>
+  <script defer src="main.js"></script></head>
+  <body>
+    <dialog>
+      <form id="addNewBookForm">
+        <button id="closeBtn" type="button" onclick="closeModal()">
+          Close
+        </button>
+        <h2>Add a new Book</h2>
+        <label for="Title">Title</label>
+        <input type="text" name="title" id="title" autofocus />
+
+        <label for="Description">Description</label>
+        <input type="text" name="description" id="description" />
+
+        <label for="Due Date">Due Date</label>
+        <input type="date" name="due_date" id="due_date" />
+
+        <label for="priority">Priority</label>
+        <select>
+          <optgroup>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </optgroup>
+        </select>
+
+        <div>
+          <input type="checkbox" id="read" name="read" value="read" />
+          <label for="read">I have read this book</label>
+        </div>
+
+        <button id="addButton" type="button" onclick="addBookToLibrary()">
+          Add
+        </button>
+      </form>
+    </dialog>
+    <div id="content">
+      <div id="controlView">
+        <button>Add Task</button>
+        <div id="projectHeader">
+          <h3>My Projects</h3>
+          <button id="addProjectBtn">Add Project</button>
+        </div>
+        <div id="projects"></div>
+      </div>
+      <div id="infoView">she Her</div>
+    </div>
+  </body>
+</html>
