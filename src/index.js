@@ -9,6 +9,26 @@ const projectsListingDiv = document.querySelector("#projects");
 projectsListingDiv.id = "projectsListingDiv";
 const infoViewDiv = document.querySelector("#infoView");
 
+const helloProject = new Project(
+  1,
+  "Hello",
+  "Welcome to Simple2do",
+  "High",
+  format(new Date(), "yyyy-MM-dd"),
+  false
+);
+const helloTask = new Task(
+  1,
+  1,
+  "First Task",
+  "This is the description of the task! Click on me to Edit :)",
+  "High",
+  format(new Date(), "yyyy-MM-dd"),
+  false,
+  "I am a note of this task! Click on me to edit :)"
+);
+console.log({ helloProject }, { helloTask });
+
 const storedUser = JSON.parse(localStorage.getItem("user"));
 let user;
 if (storedUser) {
@@ -42,6 +62,9 @@ if (storedUser) {
   });
 } else {
   user = new User("User 1");
+  user.addProject(helloProject);
+  helloProject.addTask(helloTask);
+  localStorage.setItem("user", JSON.stringify(user));
 }
 
 function taskRenderController() {
@@ -146,10 +169,14 @@ function taskRenderController() {
     const activeProject = projects.find((item) => item.id === +activeProjectId);
     taskCardRender(activeProject?.tasks);
     projectViewDiv.innerHTML = `<div>
+    <div id="projectTitleWrapper">
       <div>
         <h2>${activeProject?.title}</h2>
         <p>${activeProject?.description}</p>
       </div>
+      <button id="projectDeleteBtn">Delete</button>
+      </div>
+      
       <div>
         <h3 id="tasksHeader">Tasks</h3>
       </div>
@@ -490,7 +517,7 @@ function projectsRenderController() {
     projectsListingDiv.textContent = "";
     const storedUser = JSON.parse(localStorage.getItem("user"));
     console.log({ storedUser });
-    let allProjects = storedUser.projects.map((item, index) => {
+    let allProjects = storedUser?.projects.map((item, index) => {
       console.log({ item });
       const projectListingCard = document.createElement("div");
       projectListingCard.id = `projectListingCard_${item.id}`;
@@ -587,7 +614,6 @@ function taskActionController() {
     const activeProjectCard = projectsListingDiv.querySelector(
       `#projectListingCard_${selectedProject.id}`
     );
-
     activeProjectCard.style.backgroundColor = "rgba(51, 170, 51, 0.7)";
     activeProjectCard.style.color = "#ffff";
     activeProjectCard.style.fontWeight = "bold";

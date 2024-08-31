@@ -200,8 +200,8 @@ task details
 #activeTaskProjectTitle:hover,
 #activeTaskPriority:hover,
 #activeTaskDueDate:hover {
-  border: 1px solid lightgray;
-  cursor: text;
+  border: 1px solid gray;
+  cursor: pointer;
 }
 
 #projectUpdatedDialog {
@@ -268,4 +268,19 @@ textarea {
   font-weight: bolder;
   font-size: large;
   cursor: pointer;
+}
+
+#projectTitleWrapper {
+  /* width: 90%; */
+  display: flex;
+  justify-content: space-between;
+}
+
+#projectDeleteBtn {
+  width: 70px;
+  height: 30px;
+  background-color: red;
+  border: 0;
+  color: white;
+  border-radius: 4px;
 }
