@@ -17,17 +17,19 @@
 }
 
 #controlWrapper {
-  padding: 12px;
+  padding: 18px 16px;
 }
 
 #infoView {
-  background-color: yellow;
-  padding: 8px;
+  background-color: rgb(215, 215, 163);
+  padding: 24px;
 }
 
 #projectHeader {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
 }
 
 dialog {
@@ -128,11 +130,11 @@ dialog::backdrop {
 }
 
 #projectsListingDiv {
-  margin-top: 8px;
+  /* margin-top: 8px; */
 }
 
 #projectListingCard {
-  padding: 8px;
+  padding: 10px 16px;
   cursor: pointer;
 }
 
@@ -189,6 +191,10 @@ task details
   align-self: flex-end;
 }
 
+#activeTaskPriorityDiv {
+  display: flex;
+}
+
 #activeTaskTitle:hover,
 #activeTaskDescription:hover,
 #activeTaskProjectTitle:hover,
@@ -224,4 +230,42 @@ textarea {
   text-align: start;
   text-justify: auto;
   padding: 12px;
+}
+
+#plusCircle,
+#addProjectBtn {
+  display: flex;
+  height: 28px;
+  width: 28px;
+  border-radius: 15px;
+  align-items: center;
+  justify-content: center;
+  background-color: green;
+  color: white;
+  margin-right: 8px;
+}
+
+#plus {
+  font-weight: bolder;
+  font-size: 1.5rem;
+  /* margin-top: -50; */
+}
+
+#addTaskBtn {
+  display: flex;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+#projectsListingDiv {
+  margin-top: -8px;
+}
+
+#backBtn {
+  font-weight: bolder;
+  font-size: large;
+  cursor: pointer;
 }

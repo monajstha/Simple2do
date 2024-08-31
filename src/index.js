@@ -9,62 +9,40 @@ const projectsListingDiv = document.querySelector("#projects");
 projectsListingDiv.id = "projectsListingDiv";
 const infoViewDiv = document.querySelector("#infoView");
 
-const user = new User("Manoj Shrestha");
-const project = new Project(
-  1,
-  "Project 1",
-  "This is a project",
-  "High",
-  "2024-08-25",
-  false
-);
-const project2 = new Project(
-  2,
-  "Project 2",
-  "This is a project 2",
-  "High",
-  "2024-08-25",
-  false
-);
-const task = new Task(
-  1,
-  1,
-  "Task 1",
-  "This is a task 1 of first project",
-  "High",
-  "2024-08-24",
-  false
-);
-const task2 = new Task(
-  2,
-  1,
-  "Task 2",
-  "This is a task 1 of first project",
-  "High",
-  "2024-08-24",
-  false
-);
+const storedUser = JSON.parse(localStorage.getItem("user"));
+let user;
+if (storedUser) {
+  user = new User(storedUser.name);
+  storedUser.projects.forEach((project) => {
+    const restoredProject = new Project(
+      project.id,
+      project.title,
+      project.description,
+      project.priority,
+      project.due_date,
+      project.completed
+    );
+    user.addProject(restoredProject);
 
-const task3 = new Task(
-  3,
-  1,
-  "Task 3",
-  "This is a task 1 of first project",
-  "High",
-  "2024-08-24",
-  false
-);
-
-user.addProject(project);
-user.addProject(project2);
-user.addTaskToProject(task);
-user.addTaskToProject(task2);
-console.log(project.getAllTasks());
-// project.deleteATask(task.id);
-// user.addTaskToProject(project.id, task2);
-// user.addingTask(project, task3);
-console.log(project.getAllTasks());
-console.log(user);
+    if (project.tasks) {
+      project.tasks.forEach((task) => {
+        const restoredTask = new Task(
+          task.id,
+          task.projectId,
+          task.title,
+          task.description,
+          task.priority,
+          task.due_date,
+          task.completed,
+          task?.taskNote
+        );
+        user.addTaskToProject(restoredTask);
+      });
+    }
+  });
+} else {
+  user = new User("User 1");
+}
 
 function taskRenderController() {
   const taskDetailsViewDiv = document.createElement("div");
@@ -98,7 +76,6 @@ function taskRenderController() {
   };
 
   const handleTaskCheckboxToggle = (taskId) => {
-    console.log("toggled!!");
     const activeProject = projects.find(
       (project) => project.id === getActiveProjectId()
     );
@@ -106,12 +83,12 @@ function taskRenderController() {
     if (!activeProject) return;
 
     activeProject.updateTaskStatus(taskId);
+    localStorage.setItem("user", JSON.stringify(user));
     taskCardRender(activeProject.getAllTasks());
   };
 
   const taskCardRender = (tasks) => {
     taskCardWrapper.innerHTML = "";
-    console.log({ tasks });
     if (tasks.length) {
       // const taskCard = document.createElement("div");
       // taskCard.id = "taskCard";
@@ -125,7 +102,9 @@ function taskRenderController() {
               }" ${task.completed ? "checked" : ""}>
               <div id="taskContentDiv">
                 <div id="taskTitle">${task.title}</div>
+                <div>
                 <div>Due Date: ${task.due_date}</div>
+                </div>
               </div>
             </div>
             <button id="deleteTaskBtn">Delete</button>
@@ -133,9 +112,9 @@ function taskRenderController() {
         taskCard.style.borderColor =
           task?.priority.toLowerCase() === "high"
             ? "#ff0000"
-            : task.priority === "medium"
-            ? "#004e92"
-            : "#1a9b11";
+            : task.priority.toLowerCase() === "medium"
+            ? "#f6ff00"
+            : " #002fff";
 
         const taskContentDiv = taskCard.querySelector("#taskContentDiv");
         taskContentDiv.addEventListener("click", () => {
@@ -146,6 +125,7 @@ function taskRenderController() {
         const deleteTaskBtn = taskCard.querySelector("#deleteTaskBtn");
         deleteTaskBtn.addEventListener("click", () => {
           deleteTask(task.id); // Call the deleteTask function when the button is clicked
+          localStorage.setItem("user", JSON.stringify(user));
         });
 
         // Add event listener to the checkbox
@@ -163,9 +143,7 @@ function taskRenderController() {
 
   const projectViewRender = () => {
     infoViewDiv.textContent = "";
-    console.log({ activeProjectId });
     const activeProject = projects.find((item) => item.id === +activeProjectId);
-    console.log({ activeProject });
     taskCardRender(activeProject?.tasks);
     projectViewDiv.innerHTML = `<div>
       <div>
@@ -188,24 +166,20 @@ function taskRenderController() {
   // Populate select options in add task form
   const getAllProjectsForSelect = () => {
     const optGroup = document.querySelector("#projectOptionGroup");
-    console.log({ optGroup });
     const options = user.getAllProjects().map((project) => {
-      console.log({ project });
       return `<option value=${project.id}>${project.title}</option>`;
     });
     optGroup.innerHTML = options;
-    console.log(optGroup);
   };
 
   const renderActiveTaskDetails = (taskId) => {
     const activeProject = projects.find((item) => item.id === +activeProjectId);
     const activeTask = activeProject.tasks.find((item) => item.id === +taskId);
-    console.log({ activeTask });
 
     if (!activeTask) return;
     infoViewDiv.textContent = "";
     taskDetailsViewDiv.innerHTML = `
-    <button id="backBtn">Back</button>
+    <div id="backBtn"><-----</div>
     <div id="activeTaskDetails">
       <div id="activeTaskInfo">
         <div id="activeTaskTitleWrapper">
@@ -238,8 +212,9 @@ function taskRenderController() {
         </div>
 
         <div id="activeTaskKeyVal">
-          <p>Priority</p>
-          <div id="activeTaskPriorityDiv">
+        <p>Priority</p>
+        <div id="activeTaskPriorityDiv">
+          <div id="priorityCard"></div>
             <h4 id="activeTaskPriority">${activeTask?.priority}</h4>
           </div>
       </div>
@@ -262,6 +237,16 @@ function taskRenderController() {
       <div>
     </div>
   `;
+    const priorityCard = taskDetailsViewDiv.querySelector("#priorityCard");
+    console.log(activeTask.priority);
+    priorityCard.style.backgroundColor =
+      activeTask.priority === "High"
+        ? "#ff0000"
+        : activeTask.priority === "Medium"
+        ? "#f6ff00"
+        : " #002fff";
+    priorityCard.style.padding = "8px";
+    priorityCard.style.marginRight = "4px";
     handleClickOnTaskDetails(taskId);
     infoViewDiv.append(taskDetailsViewDiv);
   };
@@ -276,6 +261,7 @@ function taskRenderController() {
     );
     taskCheckbox.addEventListener("click", () => {
       activeProject.updateTaskStatus(activeTask.id);
+      localStorage.setItem("user", JSON.stringify(user));
       renderActiveTaskDetails(taskId);
     });
 
@@ -337,6 +323,7 @@ function taskRenderController() {
           taskNote.id,
           taskNote.value
         );
+        localStorage.setItem("user", JSON.stringify(user));
         taskNote.readOnly = true;
         taskNoteWrapper.removeChild(buttonWrapper);
         taskNoteClickCount = 0;
@@ -357,7 +344,6 @@ function taskRenderController() {
       projectSelect.id = "projectId";
       const optGroup = document.createElement("optgroup");
       optGroup.id = "projectOptionGroup";
-      console.log({ optGroup });
       const options = user.getAllProjects().map((project) => {
         let optionsStr = "";
         if (activeProject?.title === project.title) {
@@ -371,10 +357,8 @@ function taskRenderController() {
       });
       optGroup.innerHTML = options;
       projectSelect.append(optGroup);
-
       activeTaskProjectTitle.textContent = "";
 
-      // const projectSelect = document.querySelector("#projectId");
       const activeTaskProjectTitleDiv = document.querySelector(
         "#activeTaskProjectTitleDiv"
       );
@@ -387,12 +371,11 @@ function taskRenderController() {
         );
         const newProjectTitle =
           projectSelect.options[projectSelect.selectedIndex].text;
-        console.log("text?", newProjectTitle);
         activeTaskProjectTitle.textContent = newProjectTitle;
         activeTaskProjectTitleDiv.removeChild(projectSelect);
-        console.log({ activeTask });
         // Update tasks if any update has been made
         user.updateTasks(activeTask);
+        localStorage.setItem("user", JSON.stringify(user));
         const msgDialog = document.querySelector("#projectUpdatedDialog");
         const dialogTitle = document.querySelector("#dialogTitle");
         dialogTitle.textContent = `Task switched to ${newProjectTitle}`;
@@ -418,10 +401,9 @@ function taskRenderController() {
       prioritySelect.id = "projectId";
       const optGroup = document.createElement("optgroup");
       optGroup.id = "projectOptionGroup";
-      console.log({ optGroup });
       const options = ["High", "Medium", "Low"].map((priority) => {
         let optionsStr = "";
-        if (activeProject?.priority === priority) {
+        if (activeTask?.priority === priority) {
           optionsStr =
             optionsStr +
             `<option selected value=${priority}>${priority}</option>`;
@@ -446,10 +428,18 @@ function taskRenderController() {
           "priority",
           e.target.value
         );
+        localStorage.setItem("user", JSON.stringify(user));
         const newProjectPriority =
           prioritySelect.options[prioritySelect.selectedIndex].text;
         activeTaskPriority.textContent = newProjectPriority;
         activeTaskPriorityDiv.removeChild(prioritySelect);
+        const priorityCard = taskDetailsViewDiv.querySelector("#priorityCard");
+        priorityCard.style.backgroundColor =
+          activeTask.priority === "High"
+            ? "#ff0000"
+            : activeTask.priority === "Medium"
+            ? "#f6ff00"
+            : " #002fff";
       };
     });
 
@@ -487,7 +477,10 @@ function projectsRenderController() {
 
   const renderProjects = () => {
     projectsListingDiv.textContent = "";
-    let allProjects = user.getAllProjects().map((item, index) => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    console.log({ storedUser });
+    let allProjects = storedUser.projects.map((item, index) => {
+      console.log({ item });
       const projectListingCard = document.createElement("div");
       projectListingCard.id = `projectListingCard`;
       // Render tasks on initial load
@@ -499,14 +492,22 @@ function projectsRenderController() {
         item?.id === +task.getActiveProjectId()
           ? "rgba(51, 170, 51, 0.7)"
           : "rgb(101, 98, 98)";
+      projectListingCard.style.color =
+        item?.id === +task.getActiveProjectId() ? "#fff" : "#000";
+      projectListingCard.style.fontWeight =
+        item?.id === +task.getActiveProjectId() ? "bold" : "normal";
 
       projectListingCard.addEventListener("click", () => {
         handleProjectClick(item?.id);
         // Reset the background color for all cards
         document.querySelectorAll("#projectListingCard").forEach((card) => {
           card.style.backgroundColor = "rgb(101, 98, 98)";
+          card.style.color = "#000";
+          card.style.fontWeight = "normal";
         });
         projectListingCard.style.backgroundColor = "rgba(51, 170, 51, 0.7)";
+        projectListingCard.style.color = "#ffff";
+        projectListingCard.style.fontWeight = "bold";
       });
 
       projectsListingDiv.append(projectListingCard);
@@ -523,7 +524,6 @@ function projectsRenderController() {
 
 function taskActionController() {
   const taskRender = taskRenderController();
-
   const dialog = document.querySelector("#newTaskDialog");
   const addTaskBtn = document.querySelector("#addTaskBtn");
   const closeBtn = document.querySelector("#taskDialogCloseBtn");
@@ -542,12 +542,10 @@ function taskActionController() {
   });
 
   const displayModal = () => {
-    console.log("opened");
     dialog.showModal(); // Open the dialog when the button is clicked
   };
 
   const closeModal = () => {
-    console.log("closed");
     dialog.close(); // Close the dialog when the close button is clicked
   };
 
@@ -556,7 +554,6 @@ function taskActionController() {
     const form = document.getElementById("addNewTaskForm");
     let data = new FormData(form);
     for (let [key, value] of data) {
-      console.log({ value });
       taskFormValue = {
         ...taskFormValue,
         [key]: value,
@@ -565,7 +562,6 @@ function taskActionController() {
     let selectedProject = user
       .getAllProjects()
       .find((item) => item.id === +taskFormValue.projectId);
-    console.log({ selectedProject });
     const task = new Task(
       selectedProject?.tasks.length + 1,
       taskFormValue.projectId,
@@ -576,6 +572,7 @@ function taskActionController() {
       taskFormValue.completed
     );
     user.addTaskToProject(task);
+    localStorage.setItem("user", JSON.stringify(user));
     taskRender.switchActiveProjectId(selectedProject?.id);
     taskRender.renderActiveTasks();
     closeModal();
@@ -605,9 +602,6 @@ function taskActionController() {
     input.id = key;
     input.type = inputType;
     input.value = activeTask[key];
-    input.onchange = (text) => {
-      console.log("Text", text);
-    };
     input.autofocus;
 
     const buttonWrapper = document.createElement("div");
@@ -623,6 +617,7 @@ function taskActionController() {
     saveBtn.onclick = () => {
       selectedDetailElementDiv.textContent = "";
       activeProject.updateTaskDetails(activeTask.id, input.id, input.value);
+      localStorage.setItem("user", JSON.stringify(user));
       selectedDetailElement.textContent = input.value;
       selectedDetailElementDiv.append(selectedDetailElement);
     };
@@ -652,9 +647,6 @@ function projectActionController() {
   const addProjectBtn = document.querySelector("#addProjectBtn");
   const closeBtn = document.querySelector("#closeBtn");
   const addNewProjectBtn = document.querySelector("#addNewProjectBtn");
-  const deleteTaskBtn = document.querySelector("#deleteTaskBtn");
-
-  // deleteTaskBtn.addEventListener("click", () => {});
 
   addProjectBtn.addEventListener("click", () => {
     displayModal();
@@ -669,12 +661,10 @@ function projectActionController() {
   });
 
   const displayModal = () => {
-    console.log("opened");
     dialog.showModal(); // Open the dialog when the button is clicked
   };
 
   const closeModal = () => {
-    console.log("closed");
     dialog.close(); // Close the dialog when the close button is clicked
   };
 
@@ -697,7 +687,7 @@ function projectActionController() {
       };
       i++;
     }
-    const project = new Project(
+    const project1 = new Project(
       projectFormValue.id,
       projectFormValue.title,
       projectFormValue.description,
@@ -705,8 +695,10 @@ function projectActionController() {
       projectFormValue.due_date,
       projectFormValue.completed
     );
-    user.addProject(project);
-    projectRender.handleProjectClick(project?.id);
+    user.addProject(project1);
+    console.log({ user });
+    localStorage.setItem("user", JSON.stringify(user));
+    projectRender.handleProjectClick(project1?.id);
     closeModal();
     form.reset();
     // render project after it is added
@@ -719,6 +711,5 @@ function projectController() {
   const projectAction = projectActionController();
 }
 
+console.log("last user", { user });
 projectController();
-
-console.log({ user });
