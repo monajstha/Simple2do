@@ -557,7 +557,7 @@ function taskActionController() {
   const dialog = document.querySelector("#newTaskDialog");
   const addTaskBtn = document.querySelector("#addTaskBtn");
   const closeBtn = document.querySelector("#taskDialogCloseBtn");
-  const addNewTaskBtn = document.querySelector("#addNewTaskBtn");
+  const addNewTaskForm = document.querySelector("#addNewTaskForm");
 
   addTaskBtn.addEventListener("click", () => {
     displayModal();
@@ -567,7 +567,8 @@ function taskActionController() {
     closeModal();
   });
 
-  addNewTaskBtn.addEventListener("click", () => {
+  addNewTaskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
     addNewTask();
   });
 
@@ -583,19 +584,12 @@ function taskActionController() {
     let taskFormValue = {};
     const form = document.getElementById("addNewTaskForm");
     let data = new FormData(form);
-    let requiredKeys = ["title", "description"];
-    let i = 0;
     for (let [key, value] of data) {
       console.log({ key }, { value });
-      if (key === requiredKeys[i] && value === "") {
-        alert("Please fill the title and description!");
-        return;
-      }
       taskFormValue = {
         ...taskFormValue,
         [key]: value,
       };
-      i++;
     }
     let selectedProject = user
       .getAllProjects()
@@ -699,7 +693,7 @@ function projectActionController() {
   const dialog = document.querySelector("#newProjectDialog");
   const addProjectBtn = document.querySelector("#addProjectBtn");
   const closeBtn = document.querySelector("#closeBtn");
-  const addNewProjectBtn = document.querySelector("#addNewProjectBtn");
+  const addNewProjectForm = document.querySelector("#addNewProjectForm");
 
   addProjectBtn.addEventListener("click", () => {
     displayModal();
@@ -709,7 +703,8 @@ function projectActionController() {
     closeModal();
   });
 
-  addNewProjectBtn.addEventListener("click", () => {
+  addNewProjectForm.addEventListener("submit", (e) => {
+    e.preventDefault();
     addNewProject();
   });
 
@@ -727,18 +722,11 @@ function projectActionController() {
     };
     const form = document.getElementById("addNewProjectForm");
     let data = new FormData(form);
-    let requiredKeys = ["title", "description"];
-    let i = 0;
     for (let [key, value] of data) {
-      if (key === requiredKeys[i] && value === "") {
-        alert("Please fill the title and description!");
-        return;
-      }
       projectFormValue = {
         ...projectFormValue,
         [key]: value,
       };
-      i++;
     }
     const project1 = new Project(
       projectFormValue.id,

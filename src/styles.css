@@ -170,12 +170,20 @@ task details
 }
 
 #title,
-#description {
+#description,
+#due_date,
+#priority,
+#projectId,
+#submitBtn {
   width: 97%;
   height: 2rem;
   font-size: larger;
-  padding: 5px;
+  padding: 0px 5px;
   margin-bottom: 5px;
+}
+
+#submitBtn {
+  margin-top: 12px;
 }
 
 #buttonWrapper {
