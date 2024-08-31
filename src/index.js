@@ -132,6 +132,8 @@ function taskRenderController() {
             </div>
             <button id="deleteTaskBtn">Delete</button>
           `;
+        taskCard.style.borderLeftWidth = "16px";
+        taskCard.style.borderStyle = "solid";
         taskCard.style.borderColor =
           task?.priority.toLowerCase() === "high"
             ? "#ff0000"
@@ -584,6 +586,7 @@ function taskActionController() {
     let requiredKeys = ["title", "description"];
     let i = 0;
     for (let [key, value] of data) {
+      console.log({ key }, { value });
       if (key === requiredKeys[i] && value === "") {
         alert("Please fill the title and description!");
         return;

@@ -73,7 +73,7 @@ dialog::backdrop {
 #taskCard {
   display: flex;
   align-items: start;
-  border: 1.5px solid red;
+  /* border: 1.5px solid red; */
   border-radius: 4px;
   padding: 8px 8px;
   /* background-color: #004e92; */
