@@ -284,3 +284,7 @@ textarea {
   color: white;
   border-radius: 4px;
 }
+
+#addTaskTitle {
+  color: black;
+}

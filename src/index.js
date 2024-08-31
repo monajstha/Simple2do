@@ -112,7 +112,7 @@ function taskRenderController() {
 
   const taskCardRender = (tasks) => {
     taskCardWrapper.innerHTML = "";
-    if (tasks.length) {
+    if (tasks?.length) {
       // const taskCard = document.createElement("div");
       // taskCard.id = "taskCard";
       let taskCardContent = tasks?.map((task) => {
@@ -174,7 +174,6 @@ function taskRenderController() {
         <h2>${activeProject?.title}</h2>
         <p>${activeProject?.description}</p>
       </div>
-      <button id="projectDeleteBtn">Delete</button>
       </div>
       
       <div>
@@ -516,9 +515,7 @@ function projectsRenderController() {
   const renderProjects = () => {
     projectsListingDiv.textContent = "";
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    console.log({ storedUser });
     let allProjects = storedUser?.projects.map((item, index) => {
-      console.log({ item });
       const projectListingCard = document.createElement("div");
       projectListingCard.id = `projectListingCard_${item.id}`;
       // Render tasks on initial load
@@ -584,11 +581,18 @@ function taskActionController() {
     let taskFormValue = {};
     const form = document.getElementById("addNewTaskForm");
     let data = new FormData(form);
+    let requiredKeys = ["title", "description"];
+    let i = 0;
     for (let [key, value] of data) {
+      if (key === requiredKeys[i] && value === "") {
+        alert("Please fill the title and description!");
+        return;
+      }
       taskFormValue = {
         ...taskFormValue,
         [key]: value,
       };
+      i++;
     }
     let selectedProject = user
       .getAllProjects()
@@ -658,6 +662,10 @@ function taskActionController() {
 
     saveBtn.onclick = () => {
       selectedDetailElementDiv.textContent = "";
+      if (!input.value) {
+        alert("Please give this a title!");
+        return;
+      }
       activeProject.updateTaskDetails(activeTask.id, input.id, input.value);
       localStorage.setItem("user", JSON.stringify(user));
       selectedDetailElement.textContent = input.value;
@@ -738,13 +746,12 @@ function projectActionController() {
       projectFormValue.completed
     );
     user.addProject(project1);
-    console.log({ user });
     localStorage.setItem("user", JSON.stringify(user));
-    projectRender.handleProjectClick(project1?.id);
     closeModal();
     form.reset();
     // render project after it is added
     projectRender.renderProjects();
+    projectRender.handleProjectClick(project1?.id);
     taskAction.getAllProjectsForSelect();
   };
 }
