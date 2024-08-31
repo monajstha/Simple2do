@@ -296,3 +296,7 @@ textarea {
 #addTaskTitle {
   color: black;
 }
+
+#plus {
+  cursor: pointer;
+}
