@@ -7,96 +7,87 @@
     <title>Simple2do</title>
   <script defer src="main.js"></script></head>
   <body>
-    <!-- New Project Form Dialog -->
-    <dialog id="newProjectDialog">
-      <form id="addNewProjectForm">
-        <button id="closeBtn" type="button">Close</button>
-        <h2>Add a new Project</h2>
-        <label for="Title">Title</label>
-        <input required type="text" name="title" id="title" autofocus />
-
-        <label for="Description">Description</label>
-        <input required type="text" name="description" id="description" />
-
-        <div id="inputsRowContainer">
-          <div>
-            <label for="Due Date">Due Date</label>
-            <input type="date" name="due_date" id="due_date" />
-          </div>
-
-          <div>
-            <label for="priority">Priority</label>
-            <select name="priority" id="projectPriority">
-              <optgroup>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <!-- <div>
-          <input type="checkbox" id="read" name="read" value="read" />
-          <label for="read">I have read this book</label>
-        </div> -->
-
-        <button id="addNewProjectBtn" type="button">Add</button>
-      </form>
-    </dialog>
-
-    <!-- New Task Form Dialog -->
-    <dialog id="newTaskDialog">
-      <form id="addNewTaskForm">
-        <button id="taskDialogCloseBtn" type="button">Close</button>
-        <h2>Add a new Task</h2>
-        <label for="Title">Title</label>
-        <input type="text" name="title" id="title" autofocus />
-
-        <label for="Description">Description</label>
-        <input type="text" name="description" id="description" />
-
-        <div id="inputsRowContainer">
-          <div>
-            <label for="Due Date">Due Date</label>
-            <input type="date" name="due_date" id="due_date" />
-          </div>
-
-          <div>
-            <label for="priority">Priority</label>
-            <select name="priority" id="projectPriority">
-              <optgroup>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label for="projectId">Select Project</label>
-          <select name="projectId" id="projectId">
-            <optgroup id="projectOptionGroup"></optgroup>
-          </select>
-        </div>
-        <!-- <div>
-          <input type="checkbox" id="read" name="read" value="read" />
-          <label for="read">I have read this book</label>
-        </div> -->
-
-        <button id="addNewTaskBtn" type="button">Add</button>
-      </form>
-    </dialog>
-
-    <!-- Task's ProjectId updated message dialog -->
-    <dialog id="projectUpdatedDialog">
-      <h4 id="dialogTitle"></h4>
-      <p id="dialogMessage"></p>
-      <button id="dialogOkBtn">Ok</button>
-    </dialog>
-
     <div id="content">
+      <!-- New Project Form Dialog -->
+      <dialog id="newProjectDialog">
+        <form id="addNewProjectForm">
+          <button id="closeBtn" type="button">Close</button>
+          <h2>Add a new Project</h2>
+          <label for="title">Title</label>
+          <input required type="text" name="title" id="title" autofocus />
+
+          <label for="description">Description</label>
+          <input required type="text" name="description" id="description" />
+
+          <div id="inputsRowContainer">
+            <div>
+              <label for="due_date">Due Date</label>
+              <input required type="date" name="due_date" id="due_date" />
+            </div>
+
+            <div>
+              <label for="priority">Priority</label>
+              <select required name="priority" id="priority">
+                <optgroup>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <input id="submitBtn" type="submit" value="Submit" />
+        </form>
+      </dialog>
+
+      <!-- New Task Form Dialog -->
+      <dialog id="newTaskDialog">
+        <form id="addNewTaskForm">
+          <button id="taskDialogCloseBtn" type="button">Close</button>
+          <h2>Add a new Task</h2>
+          <label for="Title">Title</label>
+          <input required type="text" name="title" id="title" autofocus />
+
+          <label for="Description">Description</label>
+          <input required type="text" name="description" id="description" />
+
+          <div id="inputsRowContainer">
+            <div>
+              <label for="Due Date">Due Date</label>
+              <input required type="date" name="due_date" id="due_date" />
+            </div>
+
+            <div>
+              <label for="priority">Priority</label>
+              <select required name="priority" id="priority">
+                <optgroup>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="projectId">Select Project</label>
+            <select required name="projectId" id="projectId">
+              <optgroup id="projectOptionGroup"></optgroup>
+            </select>
+          </div>
+
+          <input id="submitBtn" type="submit" value="Submit" />
+        </form>
+      </dialog>
+
+      <!-- Task's ProjectId updated message dialog -->
+      <dialog id="projectUpdatedDialog">
+        <h4 id="dialogTitle"></h4>
+        <p id="dialogMessage"></p>
+        <button id="dialogOkBtn">Ok</button>
+      </dialog>
+
       <div id="controlView">
         <div id="controlWrapper">
           <div id="addTaskBtn">
