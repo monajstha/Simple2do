@@ -751,5 +751,4 @@ function projectController() {
   const projectAction = projectActionController();
 }
 
-console.log("last user", { user });
 projectController();

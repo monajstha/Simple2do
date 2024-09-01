@@ -46,7 +46,11 @@ form {
 }
 
 dialog::backdrop {
-  background-image: linear-gradient(45deg, #000428, #004e92);
+  background-image: linear-gradient(
+    45deg,
+    rgb(101, 98, 98),
+    rgb(215, 215, 163)
+  );
   opacity: 0.75;
 }
 
